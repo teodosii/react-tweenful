@@ -1,0 +1,62 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 1.75em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+h4 {
+  font-size: 1.25em;
+}
+
+h5,
+li li {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 0.75em;
+  letter-spacing: 0.01em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li {
+  color: #333;
+  line-height: 120%;
+}
+
+a {
+  color: #158df7;
+  text-decoration: none;
+  .active,
+  &:hover {
+    color: #ee2455;
+  }
+}
