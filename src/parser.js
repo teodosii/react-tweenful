@@ -95,10 +95,10 @@ class Parser {
 
   parseTween(el, property, animate, from, animation, missingProps, options) {
     const { duration, easing, delay, endDelay, pathLength } = options;
-
     const isTransformProperty = transformProps.includes(property);
-    const isPropertyTweenable = missingProps.indexOf(property) === -1;
-    const isColor = colorProps.indexOf(property) > -1;
+    const isPropertyTweenable = !missingProps.includes(property);
+    const isColor = colorProps.includes(property);
+
     const end = duration + delay + endDelay;
     const tween = {
       duration,
@@ -140,6 +140,12 @@ class Parser {
       }
 
       return tween;
+    }
+
+    if (is.array(animate[property])) {
+      const [from, to] = animate[property];
+      tween.from = unitToNumber(from);
+      tween.to = unitToNumber(to);
     }
 
     tween.start = 0 + delay;

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 import Engine from './engine';
 import { is } from './utils';
@@ -7,7 +8,6 @@ import Parser from './parser';
 class Observer extends React.Component {
   constructor(props) {
     super(props);
-    this.el = React.createRef();
     this.state = {
       style: props.style,
       render: props.render
@@ -21,29 +21,32 @@ class Observer extends React.Component {
   }
 
   handleVisibilityChange() {
-    if (!this.engine) return;
-    this.engine.handleVisibility(document.visibilityState);
+    if (this.engine) {
+      this.engine.handleVisibility(document.visibilityState);
+    }
   }
 
-  parseOnMount() {
-    return Parser.parse(this.el.current, { ...this.props, animate: this.props.onMount });
+  parseMount() {
+    const el = ReactDOM.findDOMNode(this);
+    return Parser.parse(el, { ...this.props, animate: this.props.mount });
   }
 
-  parseOnUnmount() {
+  parseUnmount() {
     const options = {
       ...this.props,
       from: {},
-      animate: this.props.onUnmount
+      animate: this.props.unmount
     };
 
-    return Parser.parse(this.el.current, options);
+    const el = ReactDOM.findDOMNode(this);
+    return Parser.parse(el, options);
   }
 
   componentDidMount() {
     this.addListeners();
 
     if (this.state.render) {
-      this.animateMouting();
+      this.animateMounting();
     }
   }
 
@@ -52,7 +55,7 @@ class Observer extends React.Component {
 
     if (!prevProps.render && props.render) {
       // queue mount animation after state update
-      this.setState({ render: true }, this.animateMouting);
+      this.setState({ render: true }, this.animateMounting);
     }
 
     if (prevProps.render && !props.render) {
@@ -61,23 +64,17 @@ class Observer extends React.Component {
     }
   }
 
-  animateMouting() {
-    // animate only if we have onMount defined
-    if (!this.props.onMount) return;
-
-    this.mount = this.parseOnMount();
+  animateMounting() {
+    if (!this.props.mount) return;
+    this.mount = this.parseMount();
     this.mount.events.onMountStart();
     this.animate(this.mount);
   }
 
   animateUnmounting() {
-    // animate only if we have onUnmount defined
-    if (!this.props.onUnmount) return;
-
-    this.unmount = this.parseOnUnmount();
-    console.log(this.unmount);
+    if (!this.props.unmount) return;
+    this.unmount = this.parseUnmount();
     this.unmount.events.onUnmountStart();
-    console.log('animating');
     this.animate(this.unmount);
   }
 
@@ -120,14 +117,14 @@ class Observer extends React.Component {
   renderTag() {
     const { type: Type, children, ...propsToPass } = this.props;
 
-    delete propsToPass.onMount;
-    delete propsToPass.onUnmount;
+    delete propsToPass.mount;
+    delete propsToPass.unmount;
     delete propsToPass.render;
     delete propsToPass.children;
     delete propsToPass.events;
 
     return (
-      <Type {...propsToPass} style={this.state.style} ref={this.el}>
+      <Type {...propsToPass} style={this.state.style}>
         {children}
       </Type>
     );
@@ -142,7 +139,7 @@ class Observer extends React.Component {
     let clonedElement;
     if (is.null(type)) {
       const childEl = React.Children.only(this.props.children);
-      return <childEl.type {...childEl.props} style={style} />;
+      return React.cloneElement(childEl, { style });
     }
 
     return type ? this.renderTag() : clonedElement;
@@ -156,8 +153,8 @@ Observer.defaultProps = {
 Observer.propTypes = {
   type: PropTypes.string,
   render: PropTypes.bool,
-  onMount: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  onUnmount: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  mount: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  unmount: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   children: PropTypes.node
 };
 

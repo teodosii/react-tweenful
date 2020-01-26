@@ -40,6 +40,7 @@ module.exports = {
     "linebreak-style": "off",
     "comma-dangle": "off",
     "react/prop-types": "off",
+    "react/no-find-dom-node": "off",
     "react/jsx-uses-vars": "error",
     "no-console": ["error", {
       allow: ["warn", "error", "trace", "log"]

@@ -14,9 +14,11 @@ class ObserverGroup extends React.Component {
   }
 
   mapChild(child) {
-    const { config } = this.props;
+    const { config, skipInitial } = this.props;
 
     const childEvents = child.props.events || {};
+    const skipMountAnimation = !this.didRender && skipInitial;
+
     const events = {
       ...childEvents,
       onUnmountEnd: () => {
@@ -26,19 +28,20 @@ class ObserverGroup extends React.Component {
     };
 
     if (!child.type.tweenful) {
-      return React.createElement(
-        Observer,
-        { ...config, key: child.key, className: "observer-div" },
-        child
-      );
+      const mount = { ...config.mount, duration: 10 };
+      const passedProps = {
+        ...config,
+        mount: skipMountAnimation ? mount : config.mount,
+        key: child.key,
+        events
+      };
+
+      return React.createElement(Observer, passedProps, child);
     }
 
-    if (!this.didRender && this.props.skipInitial) {
-      console.log('[]');
-      return React.cloneElement(child, {
-        events,
-        onMount: { ...child.props.onMount, duration: 10 }
-      });
+    if (skipMountAnimation) {
+      const propsToPass = { events, mount: { ...child.props.mount, duration: 10 } };
+      return React.cloneElement(child, propsToPass);
     }
 
     return React.cloneElement(child, { events });

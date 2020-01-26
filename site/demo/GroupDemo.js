@@ -18,8 +18,8 @@ class GroupDemo extends React.Component {
           config={{
             duration: 1200,
             style: { opacity: 0 },
-            onMount: { opacity: 1 },
-            onUnmount: { opacity: 0 },
+            mount: { opacity: 1 },
+            unmount: { opacity: 0 },
             easing: 'linear'
           }}
         >

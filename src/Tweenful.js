@@ -92,26 +92,19 @@ class Tweenful extends React.Component {
     this.engine.stop();
   }
 
-  updateAnimationProgress(tick) {
-    const { duration, animations } = this.instance;
-    const { current: el } = this.element;
-    const { lastElapsed } = this.engine;
-
-    this.instance.progress = calculateProgress(tick, duration);
-    const animatedProps = getAnimationProgress(tick, lastElapsed, animations, el);
-
-    const callback = () => {
-      if (this.instance.progress < 1) return;
+  onProgressUpdateCallback(instance) {
+    if (instance.progress < 1) return;
 
       // animation has completed
-      this.instance.events.onAnimationEnd();
+      instance.events.onAnimationEnd();
 
-      if (this.instance.loop) {
+      if (instance.loop) {
         // start new animation loop
         this.playAnimation();
       }
-    };
+  }
 
+  updateAnimationProgress(instance, animatedProps) {
     this.setState(prevState => {
       return {
         style: {
@@ -119,7 +112,7 @@ class Tweenful extends React.Component {
           ...animatedProps
         }
       };
-    }, callback);
+    }, () => this.onProgressUpdateCallback(instance));
   }
 
   render() {
@@ -164,18 +157,11 @@ Tweenful.propTypes = {
   children: PropTypes.node
 };
 
-Tweenful.div = props => <Tweenful type="div" {...props} />;
-Tweenful.span = props => <Tweenful type="span" {...props} />;
-Tweenful.a = props => <Tweenful type="a" {...props} />;
-Tweenful.button = props => <Tweenful type="button" {...props} />;
-Tweenful.li = props => <Tweenful type="li" {...props} />;
-Tweenful.img = props => <Tweenful type="img" {...props} />;
-
-Tweenful.div.displayName = 'Tweenful.div';
-Tweenful.span.displayName = 'Tweenful.span';
-Tweenful.a.displayName = 'Tweenful.a';
-Tweenful.button.displayName = 'Tweenful.button';
-Tweenful.li.displayName = 'Tweenful.li';
-Tweenful.img.displayName = 'Tweenful.img';
+['div', 'span', 'a', 'button', 'li', 'img'].forEach(type => {
+  const func = props => <Tweenful type={type} {...props} />;
+  Tweenful[type] = func;
+  Tweenful[type].displayName = `Tweenful.${type}`;
+  Tweenful[type].tweenful = true;
+});
 
 export default Tweenful;

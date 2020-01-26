@@ -46,8 +46,8 @@ class RouteTransitionDemo extends React.Component {
               className="key-wrapper"
               duration={1000}
               style={{ opacity: 0 }}
-              onMount={{ opacity: 1 }}
-              onUnmount={{ opacity: 0 }}
+              mount={{ opacity: 1 }}
+              unmount={{ opacity: 0 }}
               events={{
                 onMountStart: () => console.log('onMountStart'),
                 onUnmountEnd: () => console.log('onUnmountEnd')

@@ -17,8 +17,8 @@ import 'site/style/demo.scss';
     <Tweenful.div
       className="box"
       style={{ backgroundColor: '#EBBA16' }}
-      onMount={{ opacity: 1 }}
-      onUnmount={{ opacity: 0 }}
+      mount={{ opacity: 1 }}
+      unmount={{ opacity: 0 }}
       render={true}
       animateFrom={{ opacity: 0 }}
       animate={[{ translateX: '100px' }, { translateY: '-75px' }, { translateX: '0px' }]}

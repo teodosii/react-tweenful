@@ -1,5 +1,4 @@
 import React from 'react';
-import Observer from 'react-tweenful/Observer';
 import ObserverGroup from 'react-tweenful/ObserverGroup';
 
 const messages = [
@@ -14,14 +13,19 @@ const messages = [
 const types = ['default', 'success', 'danger'];
 const number = (start, end) => Math.floor(Math.random() * end) + start;
 
-const Notification = ({ notification, onClick }) => {
+const Notification = ({ notification, onClick, style }) => {
   const { id, message, type } = notification;
 
   return (
-    <div onClick={() => onClick(id)} className={`notification-item notification-${type}`}>
-      <div className="notification-content">
-        <div className="notification-close"></div>
-        <p className="notification-message">{message}</p>
+    <div className="observer-div" style={style}>
+      <div
+        onClick={() => onClick(id)}
+        className={`notification-item notification-${type}`}
+      >
+        <div className="notification-content">
+          <div className="notification-close"></div>
+          <p className="notification-message">{message}</p>
+        </div>
       </div>
     </div>
   );
@@ -71,18 +75,20 @@ class Notifications extends React.Component {
           </a>
         </div>
         <div className="list">
-          <ObserverGroup skipInitial={true}>
+          <ObserverGroup
+            config={{
+              duration: 800,
+              unmount: { opacity: 0, height: '0px' },
+              easing: 'easeInOutCubic'
+            }}
+            skipInitial={true}
+          >
             {this.state.notifications.map(notification => (
-              <Observer.div
-                duration={500}
-                style={{ opacity: 0 }}
-                onMount={{ opacity: 1 }}
-                onUnmount={{ opacity: 0, height: '0px' }}
-                easing="easeInOutCubic"
+              <Notification
                 key={notification.id}
-              >
-                <Notification notification={notification} onClick={this.removeNotification} />
-              </Observer.div>
+                notification={notification}
+                onClick={this.removeNotification}
+              />
             ))}
           </ObserverGroup>
         </div>
