@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getSvgElLength } from './svg-utils';
-import { getAnimationProgress, calculateProgress } from './utils';
 import Parser from './parser';
 import Engine from './engine';
 
@@ -24,7 +23,8 @@ class SVG extends React.Component {
     this.setState((prevState) => ({
       style: {
         ...prevState.style,
-        strokeDasharray: getSvgElLength(this.el.current)
+        strokeDasharray: getSvgElLength(this.el.current),
+        strokeDashoffset: 1500
       }
     }), this.playAnimation);
   }
@@ -34,7 +34,8 @@ class SVG extends React.Component {
 
     this.engine = new Engine({
       instance: this.instance,
-      animate: this.updateAnimationProgress
+      animate: this.updateAnimationProgress,
+      el: this.el.current
     });
 
     this.engine.play();
@@ -61,14 +62,9 @@ class SVG extends React.Component {
     }));
   }
 
-  updateAnimationProgress(tick, instance) {
-    const { duration, animations } = instance;
-    const { lastElapsed } = this.engine;
+  updateAnimationProgress(instance, animatedProps) {
     const { current: el } = this.el;
-
     const length = getSvgElLength(el);
-    const progress = calculateProgress(tick, duration);
-    const animatedProps = getAnimationProgress(tick, lastElapsed, animations, el);
 
     this.setState(
       prevState => ({
@@ -77,7 +73,7 @@ class SVG extends React.Component {
           ...animatedProps
         }
       }),
-      () => this.checkProgress(progress, length)
+      () => this.checkProgress(instance.progress, length)
     );
   }
 
@@ -118,31 +114,11 @@ SVG.propTypes = {
   animate: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
 };
 
-const circle = props => <SVG type='circle' {...props} />;
-const ellipse = props => <SVG type='ellipse' {...props} />;
-const path = props => <SVG type='path' {...props} />;
-const line = props => <SVG type='line' {...props} />;
-const polygon = props => <SVG type='polygon' {...props} />;
-const polyline = props => <SVG type='polyline' {...props} />;
-const rect = props => <SVG type='rect' {...props} />;
-const text = props => <SVG type='text' {...props} />;
+['circle', 'ellipse', 'path', 'line', 'polygon', 'polyline', 'rect', 'text'].forEach(type => {
+  const func = props => <SVG type={type} {...props} />;
+  SVG[type] = func;
+  SVG[type].displayName = `SVG.${type}`;
+  SVG[type].tweenful = true;
+});
 
-circle.displayName = "SVG.circle";
-ellipse.displayName = "SVG.ellipse";
-path.displayName = "SVG.path";
-line.displayName = "SVG.line";
-polygon.displayName = "SVG.polygon";
-polyline.displayName = "SVG.polyline";
-rect.displayName = "SVG.rect";
-text.displayName = "SVG.text";
-
-export default {
-  circle,
-  ellipse,
-  path,
-  line,
-  polygon,
-  polyline,
-  rect,
-  text
-};
+export default SVG;

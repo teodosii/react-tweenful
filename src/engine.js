@@ -28,11 +28,12 @@ class Engine {
   }
 
   getAnimatedProps(instance) {
+    const { el } = this.options;
     const { duration, animations } = instance;
 
     // shared between all tweenful components
     instance.progress = calculateProgress(this.elapsed, duration);
-    return getAnimationProgress(this.elapsed, this.lastElapsed, animations);
+    return getAnimationProgress(this.elapsed, this.lastElapsed, animations, el);
   }
 
   progress(now) {

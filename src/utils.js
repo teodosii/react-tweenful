@@ -55,13 +55,13 @@ export const parseStartingTransform = ({ transform }) => {
   const keys = Object.keys(transform);
   const domProperties = getValidDOMProperties(keys, transformProps);
   const props = {};
-  domProperties.forEach(prop => props[prop] = unitToNumber(transform[prop]));
+  domProperties.forEach(prop => (props[prop] = unitToNumber(transform[prop])));
 
   return {
     order: domProperties.filter(prop => prop !== 'transformOrigin'),
     domProperties: props
   };
-}
+};
 
 export const convertPixelsToUnit = (el, value, conversionUnit) => {
   const unit = toUnit(value);
@@ -104,7 +104,7 @@ export const getPropertyProgress = (tween, easing) => {
     };
     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
   } else if (tween.path) {
-    return `${eased(from[0].value, to[0].value)}px`;
+    return `${eased(from[0].value, to[0].value)}`;
   }
 
   const [{ unit }] = from;
@@ -112,16 +112,19 @@ export const getPropertyProgress = (tween, easing) => {
 };
 
 export const getAnimationProgress = (tick, lastElapsed, animations, el) => {
+  const getTween = (tweens, tick) => tweens.find(({ start, end }) => tick >= start && tick <= end);
+
   const animatedProps = {};
   const transforms = [];
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
+    let tween = getTween(tweens, tick);
 
-    let tween = tweens.find(({ start, end }) => tick >= start && tick <= end);
     if (!tween) {
-      // check if lastElapsed matches any tween in order to complete animation
-      tween = tweens.find(({ start, end }) => lastElapsed >= start && lastElapsed <= end);
+      // check if lastElapsed matches any tween
+      // in order to complete animation at 100%
+      tween = getTween(tweens, lastElapsed);
       if (!tween) return;
     }
 
@@ -137,8 +140,9 @@ export const getAnimationProgress = (tick, lastElapsed, animations, el) => {
 
       transforms.push(`${property}(${easedTransformValues.map(i => i)})`);
     } else if (property === 'strokeDashoffset') {
-      animatedProps['strokeDasharray'] = `${getSvgElLength(el)}`;
-      animatedProps['strokeDashoffset'] = getPropertyProgress(tween, easing);
+      const pathLength = getSvgElLength(el);
+      animatedProps['strokeDasharray'] = pathLength;
+      animatedProps['strokeDashoffset'] = (getPropertyProgress(tween, easing) / 100) * pathLength;
     } else {
       animatedProps[property] = getPropertyProgress(tween, easing);
     }
