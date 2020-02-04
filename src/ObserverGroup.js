@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Observer from './Observer';
-import { toArray } from './utils';
+import { toArray, find } from './utils';
 
 class ObserverGroup extends React.Component {
   constructor(props) {
@@ -47,6 +47,56 @@ class ObserverGroup extends React.Component {
     return React.cloneElement(child, { events });
   }
 
+  filterChildren(prevData, currentData) {
+    const prev = toArray(prevData);
+    const current = toArray(currentData);
+
+    const added = current.filter(child => !prev.find(({ key }) => key === child.key));
+    const removed = prev.filter(child => !current.find(({ key }) => key === child.key));
+
+    const left = prev.filter(e => !find(removed, e));
+    const right = current.filter(e => !find(removed, e) && !find(added, e));
+    if (left.find((_e, i) => right[i].key !== left[i].key)) {
+      throw new Error('Order has changed');
+    }
+
+    const data = [];
+    let prevIndex = 0;
+    let currentIndex = 0;
+
+    while (true) {
+      if (prevIndex === prev.length) {
+        data.push(
+          ...(current.filter((_el, i) => i >= currentIndex) || [].map(r => this.mapChild(r)))
+        );
+        return data;
+      }
+
+      if (currentIndex === current.length) {
+        data.push(
+          ...(prev.filter((_el, i) => i >= prevIndex) || [] || []).map(r => this.mapRemovedChild(r))
+        );
+        return data;
+      }
+
+      const prevEl = prev[prevIndex];
+      const currEl = current[currentIndex];
+      if (prevEl.key === currEl.key) {
+        data.push(prevEl);
+        prevIndex++;
+        currentIndex++;
+      } else if (find(added, currEl)) {
+        data.push(this.mapChild(currEl));
+        currentIndex++;
+      } else {
+        data.push(this.mapRemovedChild(prevEl));
+        prevIndex++;
+      }
+    }
+
+    return data;
+  }
+
   mapRemovedChild(child) {
     const stateMappedChild = this.state.children.find(c => c.key === child.key);
     return React.cloneElement(stateMappedChild, { render: false });
@@ -56,25 +106,8 @@ class ObserverGroup extends React.Component {
     this.didRender = true;
 
     if (this.props.children !== prevProps.children) {
-      const children = toArray(this.props.children);
-      const prevChildren = toArray(prevProps.children);
-
-      const addedChildren = children
-        .filter(child => !prevChildren.find(({ key }) => key === child.key))
-        .map(child => this.mapChild(child));
-
-      const removedChildren = prevChildren
-        .filter(child => !children.find(({ key }) => key === child.key))
-        .map(child => this.mapRemovedChild(child));
-
       this.setState(prevState => ({
-        children: [
-          ...prevState.children.map(child => {
-            const removedEl = removedChildren.find(rem => rem.key === child.key);
-            return removedEl || child;
-          }),
-          ...addedChildren
-        ]
+        children: this.filterChildren(prevState.children, this.props.children)
       }));
     }
   }

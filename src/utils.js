@@ -10,6 +10,8 @@ import {
   transformProps
 } from './constants';
 
+export const find = (arr, e) => arr.find(a => e.key === a.key);
+
 export const toArray = object => {
   if (is.null(object)) return [];
   if (Array.isArray(object)) return object;
@@ -27,10 +29,13 @@ export const toUnit = val => {
   return result ? result[1] : '';
 };
 
+export const auto = () => ([{ value: 'auto', unit: '', auto: true }]);
+
 export const unitToNumber = string => {
   if (is.null(string) || string === '') return null;
-  const groups = getRegexGroups(regexExpressions.valueUnitPair(), string);
+  if (string === 'auto') return auto();
 
+  const groups = getRegexGroups(regexExpressions.valueUnitPair(), string);
   return groups.map(group => {
     const match = regexExpressions.valueUnitPair().exec(group);
     return {
@@ -43,6 +48,7 @@ export const unitToNumber = string => {
 export const normalizeTweenUnit = (el, from, to) => {
   for (let i = 0; i < from.length; i += 1) {
     if (from[i].unit === to[i].unit) continue;
+    if (from[i].auto || to[i].auto) continue;
     const convertedValue = convertPixelsToUnit(el, from[i].value, to[i].unit);
     from[i].value = convertedValue;
     from[i].unit = to[i].unit;

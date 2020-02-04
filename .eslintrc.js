@@ -42,6 +42,7 @@ module.exports = {
     "react/prop-types": "off",
     "react/no-find-dom-node": "off",
     "react/jsx-uses-vars": "error",
+    "no-constant-condition": "off",
     "no-console": ["error", {
       allow: ["warn", "error", "trace", "log"]
     }]

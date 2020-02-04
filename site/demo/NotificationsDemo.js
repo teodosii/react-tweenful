@@ -36,11 +36,14 @@ class Notifications extends React.Component {
     super(props);
 
     this.state = {
-      notifications: new Array(5).fill(0).map(() => ({
-        id: number(1100, 9900),
-        message: messages[number(0, messages.length)],
-        type: types[number(0, types.length)]
-      }))
+      notifications: new Array(5).fill(0).map(() => {
+        const id = number(1100, 9900);
+        return {
+          id,
+          message: `${id} ${messages[number(0, messages.length)]}`,
+          type: types[number(0, types.length)]
+        };
+      })
     };
 
     this.removeNotification = this.removeNotification.bind(this);
@@ -48,12 +51,13 @@ class Notifications extends React.Component {
   }
 
   appendNotification() {
+    const id = number(1100, 9900);
     this.setState(prevState => ({
       notifications: [
         ...prevState.notifications,
         {
-          id: number(1100, 9900),
-          message: messages[number(0, messages.length - 1)],
+          id,
+          message: `${id} ${messages[number(0, messages.length - 1)]}`,
           type: types[number(0, types.length - 1)]
         }
       ]
@@ -78,7 +82,9 @@ class Notifications extends React.Component {
           <ObserverGroup
             config={{
               duration: 800,
-              unmount: { opacity: 0, height: '0px' },
+              style: { overflow: 'hidden' },
+              mount: { opacity: [0, 1], height: ['0px', 'auto'] },
+              unmount: { opacity: [1, 0], height: ['auto', '0px'] },
               easing: 'easeInOutCubic'
             }}
             skipInitial={true}

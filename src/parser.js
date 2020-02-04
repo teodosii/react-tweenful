@@ -1,9 +1,5 @@
 import parseColor from 'color-parser';
-import {
-  colorProps,
-  transformProps,
-  validKeyframeProps
-} from './constants';
+import { colorProps, transformProps, validKeyframeProps } from './constants';
 import {
   is,
   normalizeTweenUnit,
@@ -17,7 +13,7 @@ import {
 
 class Parser {
   parse(el, options, transformFrom) {
-    const animations = this.parseOptions(el, options, transformFrom)
+    const animations = this.parseOptions(el, options, transformFrom);
     const duration = Math.max(...animations.map(({ tweens }) => tweens[tweens.length - 1].end));
     const events = this.parseEvents(options);
 
@@ -70,27 +66,32 @@ class Parser {
 
   parseAnimate(el, options, transformFrom) {
     const { animate } = options;
-    const animations = this.getAnimations(
-      el,
-      options,
-      animate,
-      transformFrom
-    );
+    const animations = this.getAnimations(el, options, animate, transformFrom);
     return animations;
   }
 
   parseKeyframes(el, options, transformFrom) {
     const { keyframes } = options;
     const tweenDuration = options.duration / keyframes.length;
-    const animations = this.getAnimations(
-      el,
-      options,
-      keyframes,
-      transformFrom,
-      tweenDuration
-    );
+    const animations = this.getAnimations(el, options, keyframes, transformFrom, tweenDuration);
 
     return animations;
+  }
+
+  parseHeightPercentage(el, tween, property) {
+    const offset = property === 'width' ? el.scrollWidth : el.scrollHeight;
+    const [{ value: from }] = tween.from;
+    const [{ value: to }] = tween.to;
+
+    if (from === 'auto') {
+      tween.from[0].value = offset;
+      tween.from[0].unit = 'px';
+    }
+
+    if (to === 'auto') {
+      tween.to[0].value = offset;
+      tween.to[0].unit = 'px';
+    }
   }
 
   parseTween(el, property, animate, from, animation, missingProps, options) {
@@ -109,8 +110,8 @@ class Parser {
 
     if (isPropertyTweenable && property === 'strokeDashoffset') {
       const [from, to] = animate['strokeDashoffset'];
-      tween.from = unitToNumber(`${from / 100 * pathLength}`);
-      tween.to = unitToNumber(`${to / 100 * pathLength}`);
+      tween.from = unitToNumber(`${(from / 100) * pathLength}`);
+      tween.to = unitToNumber(`${(to / 100) * pathLength}`);
       tween.path = true;
     }
 
@@ -119,7 +120,7 @@ class Parser {
       tween.to = tween.from;
 
       if (animate[property]) {
-        const { r, g, b, a } = parseColor(animate[property])
+        const { r, g, b, a } = parseColor(animate[property]);
         tween.to = [r, g, b, a];
       }
     }
@@ -129,11 +130,8 @@ class Parser {
       tween.start = lastTween.end + delay;
       tween.end = lastTween.end + end;
       tween.from = tween.from || lastTween.to;
-      tween.to = tween.to || (
-        isPropertyTweenable
-          ? unitToNumber(animate[property] || 0)
-          : lastTween.to
-      );
+      tween.to =
+        tween.to || (isPropertyTweenable ? unitToNumber(animate[property] || 0) : lastTween.to);
 
       if (!isTransformProperty) {
         normalizeTweenUnit(el, tween.from, tween.to);
@@ -146,16 +144,20 @@ class Parser {
       const [from, to] = animate[property];
       tween.from = unitToNumber(from);
       tween.to = unitToNumber(to);
+
+      const isAuto = [from, to].includes('auto');
+      const isAutoProp = ['height', 'width'].includes(property);
+
+      if (isAutoProp && isAuto) {
+        this.parseHeightPercentage(el, tween);
+      }
     }
 
     tween.start = 0 + delay;
     tween.end = end;
     tween.from = tween.from || from[property];
-    tween.to = tween.to || (
-      is.null(animate[property])
-        ? from[property]
-        : unitToNumber(animate[property])
-    );
+    tween.to =
+      tween.to || (is.null(animate[property]) ? from[property] : unitToNumber(animate[property]));
 
     if (!isTransformProperty) {
       normalizeTweenUnit(el, tween.from, tween.to);
@@ -193,15 +195,7 @@ class Parser {
 
       iterableDOMProperties.forEach(property => {
         const animation = animations.find(anim => anim.property === property);
-        const tween = this.parseTween(
-          el,
-          property,
-          animate,
-          from,
-          animation,
-          missingProps,
-          config
-        );
+        const tween = this.parseTween(el, property, animate, from, animation, missingProps, config);
 
         if (animation) {
           animation.tweens.push(tween);
