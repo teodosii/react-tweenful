@@ -93,8 +93,6 @@ class ObserverGroup extends React.Component {
         prevIndex++;
       }
     }
-
-    return data;
   }
 
   mapRemovedChild(child) {

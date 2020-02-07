@@ -168,3 +168,115 @@ $danger_dark: #bd1120;
     }
   }
 }
+
+.pulsing-demo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background-color: transparent;
+  position: relative;
+
+  svg {
+    top: 0;
+    left: 0;
+    position: absolute;
+  }
+
+  .pulse-element {
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    background-image: radial-gradient(
+      circle closest-side,
+      rgba(237, 79, 79, 1),
+      rgba(237, 79, 79, 0.5)
+    );
+    border: solid 1px rgba(255, 255, 255, 0.8);
+    position: absolute;
+    left: 34px;
+    top: 34px;
+  }
+}
+
+.rotating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.rotating-circles {
+  position: relative;
+  // animation: pulse 4s cubic-bezier(.5, 0, .5, 1) infinite alternate;
+	// animation-name: pulse;
+
+  .circle {
+    margin: -45px;
+    width: 90px;
+    height: 90px;
+    background-color: #61bea2;
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.75;
+
+    &:nth-child(1) {
+      // transform: rotate(-60deg) translatex(45px);
+      // animation: circle1 4s infinite alternate;
+    }
+    &:nth-child(2) {
+      // transform: rotate(0deg) translatex(45px);
+      // animation: circle2 4s infinite alternate;
+    }
+    &:nth-child(3) {
+      // transform: rotate(60deg) translatex(45px);
+      // animation: circle3 4s infinite alternate;
+    }
+    &:nth-child(4) {
+      // transform: rotate(120deg) translatex(45px);
+      // animation: circle4 4s infinite alternate;
+    }
+    &:nth-child(5) {
+      // transform: rotate(180deg) translatex(45px);
+      // animation: circle5 4s infinite alternate;
+    }
+    &:nth-child(6) {
+      // transform: rotate(240deg) translatex(45px);
+      // animation: circle6 4s infinite alternate;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(.15) rotate(90deg) }
+}
+
+@keyframes circle1 {
+  to {
+    transform: rotate(-60deg) translate(0.95 * 45);
+  }
+}
+@keyframes circle2 {
+  to {
+    transform: rotate(0deg) translate(0.95 * 45);
+  }
+}
+@keyframes circle3 {
+  to {
+    transform: rotate(60deg) translate(0.95 * 45);
+  }
+}
+@keyframes circle4 {
+  to {
+    transform: rotate(120deg) translate(0.95 * 45);
+  }
+}
+@keyframes circle5 {
+  to {
+    transform: rotate(180deg) translate(0.95 * 45);
+  }
+}
+@keyframes circle6 {
+  to {
+    transform: rotate(240deg) translate(0.95 * 45);
+  }
+}

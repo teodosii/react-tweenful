@@ -50,7 +50,11 @@ class Tweenful extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { render, paused } = this.props;
+    const { render, paused, animate } = this.props;
+
+    if (prevProps.animate !== animate) {
+      return this.playAnimation();
+    }
 
     // 'render' change on didUpdate
     if (!prevProps.render && render) {

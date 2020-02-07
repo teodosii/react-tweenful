@@ -1,4 +1,5 @@
 import parseColor from 'color-parser';
+import { getSvgElLength } from './svg-utils';
 import { colorProps, transformProps, validKeyframeProps } from './constants';
 import {
   is,
@@ -172,7 +173,7 @@ class Parser {
 
     const animatableProps = getAnimatableProperties(list);
     const from = getStartingValues(el, transformFrom, animatableProps);
-    const pathLength = is.svg(el) ? el.getTotalLength() : null;
+    const pathLength = is.svg(el) ? getSvgElLength(el) : null;
     const animations = [];
 
     list.forEach(animate => {
