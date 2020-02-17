@@ -42,7 +42,7 @@ class Engine {
       this.startTime = now;
     }
 
-    const duration = getDuration();
+    const duration = getDuration(instance);
     const tick = now + this.lastTime - this.startTime;
 
     instance.time = tick;
