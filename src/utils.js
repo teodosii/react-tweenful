@@ -117,29 +117,33 @@ export const getPropertyProgress = (tween, easing) => {
   return `${eased(from[0].value, to[0].value)}${unit}`;
 };
 
-export const getAnimationProgress = (tick, lastElapsed, animations, el) => {
+export const getAnimationProgress = (instance, tick, animations, el, duration) => {
   const getTween = (tweens, tick) => tweens.find(({ start, end }) => tick >= start && tick <= end);
 
   const animatedProps = {};
   const transforms = [];
+  const isFirstRun = instance.timesCompleted === 0;
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
     let tween = getTween(tweens, tick);
+    if (!tween) return;
 
-    if (!tween) {
-      // check if lastElapsed matches any tween
-      // in order to complete animation at 100%
-      tween = getTween(tweens, lastElapsed);
-      if (!tween) return;
-    }
+    // if (!tween) {
+    //   // check if lastElapsed matches any tween
+    //   // in order to complete animation at 100%
+    //   tween = getTween(tweens, lastElapsed);
+    //   if (!tween) return;
+    // }
 
-    const tweenProgress = calculateProgress(tick - tween.start, tween.duration);
+    const tweenProgress = calculateProgress(tick - tween.start, duration || tween.duration);
     const easing = tween.easing(tweenProgress);
 
     if (transformProps.indexOf(property) > -1) {
       const easedTransformValues = tween.to.map(({ value: to, unit }, index) => {
-        const { value: from } = tween.from[index];
+        const { value: from } = isFirstRun && tween.startPos
+          ? tween.startPos[index]
+          : tween.from[index];
         const eased = from + easing * (to - from);
         return `${eased}${unit}`;
       });
@@ -190,7 +194,6 @@ export const getStartingValues = (element, transformFrom, animatableProps) => {
             unit: ''
           }))
         : transformFrom.domProperties[property];
-
       return;
     }
 

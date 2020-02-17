@@ -3,10 +3,10 @@ import { getAnimationProgress, calculateProgress } from './utils';
 class Engine {
   constructor(options) {
     this.frame = null;
-    this.lastTick = null;
     this.options = options;
-    this.elapsed = 0;
     this.completed = false;
+    this.lastTime = 0;
+    this.startTime = 0;
 
     this.progress = this.progress.bind(this);
   }
@@ -19,38 +19,41 @@ class Engine {
     state === 'visible' ? this.resume() : this.pause();
   }
 
-  calculateElapsed(now) {
-    this.lastElapsed = this.elapsed;
-    // calculate elapsed time
-    this.elapsed += now - this.lastTick;
-    // set last tick to know when to resume if paused
-    this.lastTick = now;
-  }
-
-  getAnimatedProps(instance) {
-    const { el } = this.options;
-    const { duration, animations } = instance;
-
-    // shared between all tweenful components
-    instance.progress = calculateProgress(this.elapsed, duration);
-    return getAnimationProgress(this.elapsed, this.lastElapsed, animations, el);
-  }
-
   progress(now) {
-    const { instance, animate } = this.options;
+    const {
+      el,
+      instance,
+      animate,
+      onComplete,
+      instance: { timesCompleted, animations }
+    } = this.options;
 
-    if (!this.lastTick) {
+    if (!this.startTime) {
       this.completed = false;
-      this.lastTick = now;
+      this.startTime = now;
     }
 
-    this.calculateElapsed(now);
+    const duration = timesCompleted === 0 ? instance.startDuration : instance.duration;
+    const tick = now + (this.lastTime - this.startTime);
 
-    // shared across all tweenful components
-    const props = this.getAnimatedProps(instance);
-    animate(instance, props);
+    instance.time = tick;
+    instance.progress = calculateProgress(tick, duration);
+    const animatedProps = getAnimationProgress(
+      instance,
+      tick,
+      animations,
+      el,
+      instance.timesCompleted === 0 ? instance.startDuration : 0
+    );
 
-    if (this.elapsed < instance.duration) {
+    animate(instance, animatedProps);
+
+    if (instance.progress === 1) {
+      instance.events.onAnimationEnd();
+      onComplete(instance);
+    }
+
+    if (tick < duration) {
       this.play();
     } else {
       this.completed = true;
@@ -66,23 +69,21 @@ class Engine {
 
   resume() {
     if (!this.completed) {
-      this.lastTick = performance.now();
+      this.startTime = 0;
+      this.lastTime = this.options.instance.time;
       this.play();
     }
   }
 
   stop() {
-    if (!this.completed) {
-      cancelAnimationFrame(this.frame);
-      this.reset();
-    }
+    cancelAnimationFrame(this.frame);
+    this.reset();
   }
 
   reset() {
     this.frame = null;
-    this.lastTick = null;
-    this.lastElapsed = null;
-    this.elapsed = 0;
+    this.lastTime = 0;
+    this.startTime = 0;
   }
 }
 
