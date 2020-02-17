@@ -29,7 +29,7 @@ export const toUnit = val => {
   return result ? result[1] : '';
 };
 
-export const auto = () => ([{ value: 'auto', unit: '', auto: true }]);
+export const auto = () => [{ value: 'auto', unit: '', auto: true }];
 
 export const unitToNumber = string => {
   if (is.null(string) || string === '') return null;
@@ -97,9 +97,13 @@ export const getValidDOMProperties = (properties, lookupList = validDOMPropertie
   return validProperties;
 };
 
-export const getPropertyProgress = (tween, easing) => {
-  const { from, to } = tween;
+export const getPropertyProgress = (tween, easing, isFirstCycle) => {
   const eased = (from, to) => from + easing * (to - from);
+  const { to } = tween;
+
+  // on first cycle we might have negative delay
+  // which means we'll have a different starting from
+  const from = isFirstCycle && tween.startPos ? tween.startPos : tween.from;
 
   if (tween.color) {
     const rgb = {
@@ -117,33 +121,31 @@ export const getPropertyProgress = (tween, easing) => {
   return `${eased(from[0].value, to[0].value)}${unit}`;
 };
 
-export const getAnimationProgress = (instance, tick, animations, el, duration) => {
+export const getAnimationProgress = (instance, tick, lastTick, animations, el) => {
   const getTween = (tweens, tick) => tweens.find(({ start, end }) => tick >= start && tick <= end);
 
   const animatedProps = {};
   const transforms = [];
-  const isFirstRun = instance.timesCompleted === 0;
+  const isFirstCycle = instance.timesCompleted === 0;
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
     let tween = getTween(tweens, tick);
-    if (!tween) return;
+    if (!tween) {
+      // check if lastTick matches any tween in order to complete animation at 100%
+      tween = getTween(tweens, lastTick);
+      if (!tween) return;
+    }
 
-    // if (!tween) {
-    //   // check if lastElapsed matches any tween
-    //   // in order to complete animation at 100%
-    //   tween = getTween(tweens, lastElapsed);
-    //   if (!tween) return;
-    // }
-
-    const tweenProgress = calculateProgress(tick - tween.start, duration || tween.duration);
+    // duration || tween.duration
+    const tweenDuration = isFirstCycle && tween.startDuration ? tween.startDuration : tween.duration;
+    const tweenProgress = calculateProgress(tick - tween.start, tweenDuration);
     const easing = tween.easing(tweenProgress);
 
     if (transformProps.indexOf(property) > -1) {
       const easedTransformValues = tween.to.map(({ value: to, unit }, index) => {
-        const { value: from } = isFirstRun && tween.startPos
-          ? tween.startPos[index]
-          : tween.from[index];
+        const { value: from } =
+          isFirstCycle && tween.startPos ? tween.startPos[index] : tween.from[index];
         const eased = from + easing * (to - from);
         return `${eased}${unit}`;
       });
@@ -152,9 +154,10 @@ export const getAnimationProgress = (instance, tick, animations, el, duration) =
     } else if (property === 'strokeDashoffset') {
       const pathLength = getSvgElLength(el);
       animatedProps['strokeDasharray'] = pathLength;
-      animatedProps['strokeDashoffset'] = (getPropertyProgress(tween, easing) / 100) * pathLength;
+      animatedProps['strokeDashoffset'] =
+        (getPropertyProgress(tween, easing, isFirstCycle) / 100) * pathLength;
     } else {
-      animatedProps[property] = getPropertyProgress(tween, easing);
+      animatedProps[property] = getPropertyProgress(tween, easing, isFirstCycle);
     }
   });
 

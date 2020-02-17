@@ -32,13 +32,14 @@ const RotatingSvg = () => {
         </clipPath>
       </defs>
       <circle cx="500" cy="500" r="450" stroke="none" fill="#000"></circle>
-      <g
+      <SVG
+        type="g"
         className="circle"
         loop={true}
-        duration={WAVE_COUNT * duration}
+        duration={WAVE_COUNT/2 * duration}
         style={{ transformOrigin: "500px 500px" }}
         easing="linear"
-        animate={{ }}
+        animate={{ rotate: '360deg' }}
       >
         {waves.map(wave => (
           <SVG.path
@@ -54,7 +55,7 @@ const RotatingSvg = () => {
             animate={{ rotate: `${wave.angle}`, translate: `0px ${offset}px` }}
           />
         ))}
-      </g>
+      </SVG>
     </svg>
   );
 };

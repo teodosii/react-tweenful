@@ -1,5 +1,13 @@
 import { getAnimationProgress, calculateProgress } from './utils';
 
+const getDuration = ({ timesCompleted, startDuration, duration }) => {
+  if (!timesCompleted && startDuration) {
+    return startDuration;
+  }
+
+  return duration;
+};
+
 class Engine {
   constructor(options) {
     this.frame = null;
@@ -7,6 +15,7 @@ class Engine {
     this.completed = false;
     this.lastTime = 0;
     this.startTime = 0;
+    this.lastTick = 0;
 
     this.progress = this.progress.bind(this);
   }
@@ -25,7 +34,7 @@ class Engine {
       instance,
       animate,
       onComplete,
-      instance: { timesCompleted, animations }
+      instance: { animations }
     } = this.options;
 
     if (!this.startTime) {
@@ -33,18 +42,12 @@ class Engine {
       this.startTime = now;
     }
 
-    const duration = timesCompleted === 0 ? instance.startDuration : instance.duration;
-    const tick = now + (this.lastTime - this.startTime);
+    const duration = getDuration();
+    const tick = now + this.lastTime - this.startTime;
 
     instance.time = tick;
     instance.progress = calculateProgress(tick, duration);
-    const animatedProps = getAnimationProgress(
-      instance,
-      tick,
-      animations,
-      el,
-      instance.timesCompleted === 0 ? instance.startDuration : 0
-    );
+    const animatedProps = getAnimationProgress(instance, tick, this.lastTick, animations, el);
 
     animate(instance, animatedProps);
 
@@ -53,6 +56,7 @@ class Engine {
       onComplete(instance);
     }
 
+    this.lastTick = tick;
     if (tick < duration) {
       this.play();
     } else {
@@ -84,6 +88,8 @@ class Engine {
     this.frame = null;
     this.lastTime = 0;
     this.startTime = 0;
+    this.lastTick = 0;
+    this.tick = 0;
   }
 }
 

@@ -12,13 +12,24 @@ import {
   parseEasing
 } from './utils';
 
+const findSummedStartingDuration = animations => {
+  if (!animations || !animations.length) return 0;
+
+  const [{ tweens }] = animations;
+  const summedStartingDuration =
+    tweens.length === 1
+      ? tweens[0].startDuration
+      : tweens.reduce((acc, current) => (acc += current.startDuration || 0), 0);
+
+  return summedStartingDuration;
+};
+
 class Parser {
   parse(el, options, transformFrom) {
     const animations = this.parseOptions(el, options, transformFrom);
     const duration = Math.max(...animations.map(({ tweens }) => tweens[tweens.length - 1].end));
     const events = this.parseEvents(options);
-
-    const data = animations.map(anim => ({ startDuration: anim.tweens[0].startDuration }));
+    const summedStartingDuration = findSummedStartingDuration(animations);
 
     return {
       progress: 0,
@@ -26,7 +37,7 @@ class Parser {
       timesCompleted: 0,
       paused: false,
       duration,
-      startDuration: data[0].startDuration,
+      startDuration: summedStartingDuration,
       loop: options.loop || false,
       direction: options.direction || 'normal',
       animations,
@@ -88,9 +99,6 @@ class Parser {
   parseTween(el, property, animate, from, animation, missingProps, options) {
     const { loop, duration, easing, delay, endDelay, pathLength } = options;
 
-    // duration on tween/config
-    // todo
-
     const isTransformProperty = transformProps.includes(property);
     const isPropertyTweenable = !missingProps.includes(property);
     const isColor = colorProps.includes(property);
@@ -100,7 +108,8 @@ class Parser {
       duration,
       easing: parseEasing(easing),
       startDelay: parsedDelay,
-      endDelay
+      endDelay,
+      originalDelay: delay
     };
 
     if (isPropertyTweenable && property === 'strokeDashoffset') {
@@ -138,9 +147,19 @@ class Parser {
       tween.from = tween.from || lastTween.to;
       tween.to =
         tween.to || (isPropertyTweenable ? unitToNumber(animate[property] || 0) : lastTween.to);
-
       tween.start = lastTween.end + tween.startDelay;
       tween.end = lastTween.end + end;
+
+      if (delay < 0) {
+        const { startPos, startDuration } = this.animationStartingPosition(
+          tween,
+          delay,
+          duration,
+          loop
+        );
+        tween.startDuration = startDuration;
+        tween.startPos = startPos;
+      }
 
       if (!isTransformProperty) {
         normalizeTweenUnit(el, tween.from, tween.to);
@@ -152,7 +171,8 @@ class Parser {
     tween.from = tween.from || from[property];
     tween.to =
       tween.to || (is.null(animate[property]) ? from[property] : unitToNumber(animate[property]));
-
+    tween.start = 0 + tween.startDelay;
+    tween.end = end;
     if (delay < 0) {
       const { startPos, startDuration } = this.animationStartingPosition(
         tween,
@@ -160,13 +180,9 @@ class Parser {
         duration,
         loop
       );
-      tween.dd = delay;
       tween.startDuration = startDuration;
       tween.startPos = startPos;
     }
-
-    tween.start = 0 + tween.startDelay;
-    tween.end = end;
 
     if (!isTransformProperty) {
       normalizeTweenUnit(el, tween.from, tween.to);
@@ -191,6 +207,7 @@ class Parser {
       throw new Error('not handled for now');
     }
 
+    // for (abs = Math.abs(delay); abs >= duration; abs -= duration);
     let abs = Math.abs(delay);
     while (abs >= duration) {
       abs -= duration;
