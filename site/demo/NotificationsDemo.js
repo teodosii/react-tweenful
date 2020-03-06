@@ -17,7 +17,7 @@ const Notification = ({ notification, onClick, style }) => {
   const { id, message, type } = notification;
 
   return (
-    <div className="observer-div" style={style}>
+    <div className="observer-element" style={style}>
       <div
         onClick={() => onClick(id)}
         className={`notification-item notification-${type}`}

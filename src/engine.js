@@ -1,12 +1,43 @@
 import { getAnimationProgress, calculateProgress } from './utils';
 
+const modulo = (delay, duration) => {
+  while (delay >= duration) {
+    delay -= duration;
+  }
+
+  return delay;
+};
+
+const computeProgressTick = (instance) => {
+  // ignore negative delay after the first animation occurred
+  if (instance.delay >= 0 || instance.timesCompleted > 0) return 0;
+
+  const { duration, loop } = instance;
+  const delay = Math.abs(instance.delay);
+
+  if (loop === true) {
+    return modulo(delay, duration);
+  } else if (loop === false) {
+    return delay > duration ? duration : modulo(delay, duration);
+  } else if (loop > 0) {
+    const totalDuration = loop * duration;
+
+    // delay might last longer than the animation itself
+    // else we'll just calculate the modulo
+    return delay > totalDuration ? duration : modulo(delay, duration);
+  }
+
+  return 0;
+};
+
 class Engine {
   constructor(options) {
     this.frame = null;
-    this.lastTick = null;
     this.options = options;
-    this.elapsed = 0;
     this.completed = false;
+    this.lastTime = 0;
+    this.startTime = 0;
+    this.lastTick = 0;
 
     this.progress = this.progress.bind(this);
   }
@@ -19,38 +50,56 @@ class Engine {
     state === 'visible' ? this.resume() : this.pause();
   }
 
-  calculateElapsed(now) {
-    this.lastElapsed = this.elapsed;
-    // calculate elapsed time
-    this.elapsed += now - this.lastTick;
-    // set last tick to know when to resume if paused
-    this.lastTick = now;
-  }
+  updateTimesCompleted() {
+    const { instance } = this.options;
+    const { duration, delay, loop } = instance;
 
-  getAnimatedProps(instance) {
-    const { el } = this.options;
-    const { duration, animations } = instance;
+    if (!instance.timesCompleted && delay < 0 && loop > 0) {
+      let absDelay = Math.abs(delay);
+      if (absDelay < duration) {
+        instance.timesCompleted++;
+      }
 
-    // shared between all tweenful components
-    instance.progress = calculateProgress(this.elapsed, duration);
-    return getAnimationProgress(this.elapsed, this.lastElapsed, animations, el);
+      while (absDelay >= duration) {
+        absDelay -= duration;
+        instance.timesCompleted++;
+      }
+    } else {
+      instance.timesCompleted++;
+    }
   }
 
   progress(now) {
-    const { instance, animate } = this.options;
+    const {
+      el,
+      instance,
+      animate,
+      onComplete,
+      instance: { duration, animations }
+    } = this.options;
 
-    if (!this.lastTick) {
+    if (!this.startTime) {
       this.completed = false;
-      this.lastTick = now;
+      this.startTime = now;
     }
 
-    this.calculateElapsed(now);
+    const progressTick = computeProgressTick(instance);
+    const tick = now + progressTick + (this.lastTime - this.startTime);
 
-    // shared across all tweenful components
-    const props = this.getAnimatedProps(instance);
-    animate(instance, props);
+    instance.time = tick;
+    instance.progress = calculateProgress(tick, duration);
+    const animatedProps = getAnimationProgress(instance, tick, this.lastTick, animations, el);
 
-    if (this.elapsed < instance.duration) {
+    animate(instance, animatedProps);
+
+    if (instance.progress === 1) {
+      instance.events.onAnimationEnd();
+      this.updateTimesCompleted();
+      onComplete(instance);
+    }
+
+    this.lastTick = tick;
+    if (tick < duration) {
       this.play();
     } else {
       this.completed = true;
@@ -66,23 +115,23 @@ class Engine {
 
   resume() {
     if (!this.completed) {
-      this.lastTick = performance.now();
+      this.startTime = 0;
+      this.lastTime = this.options.instance.time;
       this.play();
     }
   }
 
   stop() {
-    if (!this.completed) {
-      cancelAnimationFrame(this.frame);
-      this.reset();
-    }
+    cancelAnimationFrame(this.frame);
+    this.reset();
   }
 
   reset() {
     this.frame = null;
-    this.lastTick = null;
-    this.lastElapsed = null;
-    this.elapsed = 0;
+    this.lastTime = 0;
+    this.startTime = 0;
+    this.lastTick = 0;
+    this.tick = 0;
   }
 }
 

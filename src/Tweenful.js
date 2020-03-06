@@ -9,7 +9,10 @@ class Tweenful extends React.Component {
     super(props);
 
     const transformFrom = parseStartingTransform(props);
-    const transform = transformFrom.order.map(prop => ({ prop, args: transformFrom.domProperties[prop] }));
+    const transform = transformFrom.order.map(prop => ({
+      prop,
+      args: transformFrom.domProperties[prop]
+    }));
     const mappedArgs = args => `${args.map(arg => `${arg.value}${arg.unit}`).join(', ')}`;
     const transformFunctions = transform.map(t => `${t.prop}(${mappedArgs(t.args)})`);
 
@@ -25,10 +28,7 @@ class Tweenful extends React.Component {
 
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     this.updateAnimationProgress = this.updateAnimationProgress.bind(this);
-  }
-
-  addListeners() {
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    this.onComplete = this.onComplete.bind(this);
   }
 
   handleVisibilityChange() {
@@ -37,15 +37,10 @@ class Tweenful extends React.Component {
   }
 
   componentDidMount() {
-    this.addListeners();
-    this.instance = Parser.parse(
-      this.element.current,
-      this.props,
-      this.transformFrom
-    );
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
     if (this.state.render) {
-      this.playAnimation(!this.props.paused);
+      this.play(true);
     }
   }
 
@@ -53,59 +48,63 @@ class Tweenful extends React.Component {
     const { render, paused, animate } = this.props;
 
     if (prevProps.animate !== animate) {
-      return this.playAnimation();
+      return this.play(true);
     }
 
-    // 'render' change on didUpdate
-    if (!prevProps.render && render) {
-      this.playAnimation();
-    } else if (!render && prevProps.render) {
-      this.stopAnimation();
+    if (prevProps.render ^ render) {
+      this.setState({ render }, () => (render ? this.play(true) : this.stop()));
     }
 
-    // 'paused' change on didUpdate
-    if (!prevProps.paused && paused) {
-      this.pauseAnimation();
-    } else if (prevProps.paused && !paused) {
-      this.resumeAnimation();
+    if (prevProps.paused ^ paused) {
+      (paused && this.pause()) || this.resume();
     }
   }
 
-  playAnimation(play = true) {
-    this.instance.progress = 0;
+  componentWillUnmount() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+  }
+
+  onComplete(instance) {
+    const { loop, timesCompleted } = instance;
+
+    if (!loop) return;
+    if (loop === true) {
+      return this.play();
+    }
+
+    if (timesCompleted < loop) {
+      return this.play();
+    }
+  }
+
+  play(reset = false) {
+    if (this.engine) {
+      this.engine.stop();
+    }
+
+    if (reset) {
+      this.instance = Parser.parse(this.element.current, this.props, this.transformFrom);
+    }
+
     this.engine = new Engine({
       instance: this.instance,
-      animate: this.updateAnimationProgress
+      animate: this.updateAnimationProgress,
+      onComplete: this.onComplete
     });
 
-    if (play) {
-      this.instance.events.onAnimationStart();
-      this.engine.play();
-    }
+    this.engine.play();
   }
 
-  pauseAnimation() {
+  pause() {
     this.engine.pause();
   }
 
-  resumeAnimation() {
+  resume() {
     this.engine.resume();
   }
 
-  stopAnimation() {
+  stop() {
     this.engine.stop();
-  }
-
-  onProgressUpdateCallback(instance) {
-    if (instance.progress < 1) return;
-
-      // animation has completed
-      instance.events.onAnimationEnd();
-
-      if (instance.loop) {
-        // start new animation loop
-        this.playAnimation();
-      }
   }
 
   updateAnimationProgress(instance, animatedProps) {
@@ -116,7 +115,7 @@ class Tweenful extends React.Component {
           ...animatedProps
         }
       };
-    }, () => this.onProgressUpdateCallback(instance));
+    });
   }
 
   render() {

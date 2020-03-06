@@ -19,12 +19,14 @@ class Parser {
     const events = this.parseEvents(options);
 
     return {
+      duration,
       progress: 0,
       lastTick: 0,
+      timesCompleted: 0,
       paused: false,
-      duration,
+      delay: options.delay || 0,
       loop: options.loop,
-      direction: options.direction,
+      direction: options.direction || 'normal',
       animations,
       transformFrom,
       events
@@ -58,25 +60,7 @@ class Parser {
       animatable: options.animate || options.keyframes
     };
 
-    if (!options.animate) {
-      arguments.duration = options.duration / options.keyframes.length;
-    }
-
     return this.getAnimations(args);
-  }
-
-  parseAnimate(el, options, transformFrom) {
-    const { animate } = options;
-    const animations = this.getAnimations(el, options, animate, transformFrom);
-    return animations;
-  }
-
-  parseKeyframes(el, options, transformFrom) {
-    const { keyframes } = options;
-    const tweenDuration = options.duration / keyframes.length;
-    const animations = this.getAnimations(el, options, keyframes, transformFrom, tweenDuration);
-
-    return animations;
   }
 
   parseHeightPercentage(el, tween, property) {
@@ -96,11 +80,12 @@ class Parser {
   }
 
   parseTween(el, property, animate, from, animation, missingProps, options) {
-    const { duration, easing, delay, endDelay, pathLength } = options;
+    const { duration, easing, endDelay, pathLength } = options;
+
     const isTransformProperty = transformProps.includes(property);
     const isPropertyTweenable = !missingProps.includes(property);
     const isColor = colorProps.includes(property);
-
+    const delay = Math.max(0, options.delay);
     const end = duration + delay + endDelay;
     const tween = {
       duration,
@@ -126,21 +111,6 @@ class Parser {
       }
     }
 
-    if (animation) {
-      const lastTween = animation.tweens[animation.tweens.length - 1];
-      tween.start = lastTween.end + delay;
-      tween.end = lastTween.end + end;
-      tween.from = tween.from || lastTween.to;
-      tween.to =
-        tween.to || (isPropertyTweenable ? unitToNumber(animate[property] || 0) : lastTween.to);
-
-      if (!isTransformProperty) {
-        normalizeTweenUnit(el, tween.from, tween.to);
-      }
-
-      return tween;
-    }
-
     if (is.array(animate[property])) {
       const [from, to] = animate[property];
       tween.from = unitToNumber(from);
@@ -154,11 +124,27 @@ class Parser {
       }
     }
 
-    tween.start = 0 + delay;
-    tween.end = end;
+    if (animation) {
+      // tween is already part of an animation
+      const lastTween = animation.tweens[animation.tweens.length - 1];
+      tween.from = tween.from || lastTween.to;
+      tween.to =
+        tween.to || (isPropertyTweenable ? unitToNumber(animate[property] || 0) : lastTween.to);
+      tween.start = lastTween.end + tween.startDelay;
+      tween.end = lastTween.end + end;
+
+      if (!isTransformProperty) {
+        normalizeTweenUnit(el, tween.from, tween.to);
+      }
+
+      return tween;
+    }
+
     tween.from = tween.from || from[property];
     tween.to =
       tween.to || (is.null(animate[property]) ? from[property] : unitToNumber(animate[property]));
+    tween.start = 0 + tween.startDelay;
+    tween.end = end;
 
     if (!isTransformProperty) {
       normalizeTweenUnit(el, tween.from, tween.to);
@@ -167,13 +153,10 @@ class Parser {
     return tween;
   }
 
-  getAnimations({ el, options, animatable, duration, transformFrom }) {
-    // we accept both array and object syntax for animate/keyframes
+  getAnimations({ el, options, animatable, transformFrom }) {
     const list = is.array(animatable) ? animatable : [animatable];
-
     const animatableProps = getAnimatableProperties(list);
     const from = getStartingValues(el, transformFrom, animatableProps);
-    const pathLength = is.svg(el) ? getSvgElLength(el) : null;
     const animations = [];
 
     list.forEach(animate => {
@@ -183,15 +166,16 @@ class Parser {
       const iterableDOMProperties = [...domProps, ...missingProps];
 
       const config = {
-        duration: pickFirstNotNull(duration, animate.duration, options.duration),
+        loop: options.loop,
+        duration: pickFirstNotNull(animate.duration, options.duration / list.length),
         delay: pickFirstNotNull(animate.delay, options.delay, 0),
         endDelay: pickFirstNotNull(animate.endDelay, options.endDelay, 0),
         easing: animate.easing || options.easing
       };
 
-      if (!is.null(pathLength)) {
+      if (is.svg(el)) {
         // supply pathLength for path animations
-        config.pathLength = pathLength;
+        config.pathLength = getSvgElLength(el);
       }
 
       iterableDOMProperties.forEach(property => {

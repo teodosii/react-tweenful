@@ -56,6 +56,7 @@ class ObserverGroup extends React.Component {
 
     const left = prev.filter(e => !find(removed, e));
     const right = current.filter(e => !find(removed, e) && !find(added, e));
+
     if (left.find((_e, i) => right[i].key !== left[i].key)) {
       throw new Error('Order has changed');
     }
@@ -66,16 +67,12 @@ class ObserverGroup extends React.Component {
 
     while (true) {
       if (prevIndex === prev.length) {
-        data.push(
-          ...(current.filter((_el, i) => i >= currentIndex) || [].map(r => this.mapChild(r)))
-        );
+        data.push(...current.filter((_el, i) => i >= currentIndex).map(r => this.mapChild(r)));
         return data;
       }
 
       if (currentIndex === current.length) {
-        data.push(
-          ...(prev.filter((_el, i) => i >= prevIndex) || [] || []).map(r => this.mapRemovedChild(r))
-        );
+        data.push(...prev.filter((_el, i) => i >= prevIndex).map(r => this.mapRemovedChild(r)));
         return data;
       }
 

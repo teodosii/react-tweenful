@@ -44,11 +44,10 @@ $danger_dark: #bd1120;
 }
 
 .animista {
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
   display: block;
-  margin: auto;
-  padding-top: 200px;
+  padding: 10px;
 }
 
 .route-transition-demo {
@@ -207,76 +206,13 @@ $danger_dark: #bd1120;
 
 .rotating-circles {
   position: relative;
-  // animation: pulse 4s cubic-bezier(.5, 0, .5, 1) infinite alternate;
-	// animation-name: pulse;
 
   .circle {
-    margin: -45px;
-    width: 90px;
-    height: 90px;
-    background-color: #61bea2;
-    position: absolute;
+    margin: -30px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    opacity: 0.75;
-
-    &:nth-child(1) {
-      // transform: rotate(-60deg) translatex(45px);
-      // animation: circle1 4s infinite alternate;
-    }
-    &:nth-child(2) {
-      // transform: rotate(0deg) translatex(45px);
-      // animation: circle2 4s infinite alternate;
-    }
-    &:nth-child(3) {
-      // transform: rotate(60deg) translatex(45px);
-      // animation: circle3 4s infinite alternate;
-    }
-    &:nth-child(4) {
-      // transform: rotate(120deg) translatex(45px);
-      // animation: circle4 4s infinite alternate;
-    }
-    &:nth-child(5) {
-      // transform: rotate(180deg) translatex(45px);
-      // animation: circle5 4s infinite alternate;
-    }
-    &:nth-child(6) {
-      // transform: rotate(240deg) translatex(45px);
-      // animation: circle6 4s infinite alternate;
-    }
-  }
-}
-
-@keyframes pulse {
-  0% { transform: scale(.15) rotate(90deg) }
-}
-
-@keyframes circle1 {
-  to {
-    transform: rotate(-60deg) translate(0.95 * 45);
-  }
-}
-@keyframes circle2 {
-  to {
-    transform: rotate(0deg) translate(0.95 * 45);
-  }
-}
-@keyframes circle3 {
-  to {
-    transform: rotate(60deg) translate(0.95 * 45);
-  }
-}
-@keyframes circle4 {
-  to {
-    transform: rotate(120deg) translate(0.95 * 45);
-  }
-}
-@keyframes circle5 {
-  to {
-    transform: rotate(180deg) translate(0.95 * 45);
-  }
-}
-@keyframes circle6 {
-  to {
-    transform: rotate(240deg) translate(0.95 * 45);
+    background-color: #1ED4E1;
+    position: absolute;
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { parseStartingTransform } from './utils';
 import { getSvgElLength } from './svg-utils';
 import Parser from './parser';
 import Engine from './engine';
@@ -7,74 +8,117 @@ import Engine from './engine';
 class SVG extends React.Component {
   constructor(props) {
     super(props);
+
+    const transformFrom = parseStartingTransform(props);
+    this.transformFrom = transformFrom;
     this.state = {
-      style: props.style,
+      style: {
+        ...props.style
+      },
       render: props.render
     };
-    
+
     this.el = React.createRef();
     this.updateAnimationProgress = this.updateAnimationProgress.bind(this);
+    this.onComplete = this.onComplete.bind(this);
+    this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+  }
+
+  handleVisibilityChange() {
+    if (!this.engine) return;
+    this.engine.handleVisibility(document.visibilityState);
   }
 
   componentDidMount() {
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
     if (!this.state.render) return;
-
-    this.instance = Parser.parse(this.el.current, this.props);
-    this.setState((prevState) => ({
-      style: {
-        ...prevState.style,
-        strokeDasharray: getSvgElLength(this.el.current),
-        strokeDashoffset: 1500
-      }
-    }), this.playAnimation);
-  }
-
-  playAnimation() {
-    this.instance.progress = 0;
-
-    this.engine = new Engine({
-      instance: this.instance,
-      animate: this.updateAnimationProgress,
-      el: this.el.current
-    });
-
-    this.engine.play();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { props } = this;
-
-    if (!prevProps.render && props.render) {
-      this.instance = Parser.parse(this.el.current, this.animate);
-      this.setState({ render: true }, this.playAnimation);
-    }
-  }
-
-  checkProgress(progress, length) {
-    if (progress < 1) return;
-
-    this.setState((prevState) => ({
-      style: {
-        ...prevState.style,
-        strokeDasharray: `${length}`,
-        strokeDashoffset: null
-      }
-    }));
-  }
-
-  updateAnimationProgress(instance, animatedProps) {
-    const { current: el } = this.el;
-    const length = getSvgElLength(el);
 
     this.setState(
       prevState => ({
         style: {
           ...prevState.style,
-          ...animatedProps
+          strokeDasharray: getSvgElLength(this.el.current),
+          strokeDashoffset: 1500
         }
       }),
-      () => this.checkProgress(instance.progress, length)
+      () => this.play(true)
     );
+  }
+
+  play(reset = false) {
+    if (this.engine) {
+      this.engine.stop();
+    }
+
+    if (reset) {
+      this.instance = Parser.parse(
+        this.el.current,
+        this.props,
+        this.transformFrom
+      );
+    }
+
+    this.engine = new Engine({
+      id: this.props.id,
+      instance: this.instance,
+      animate: this.updateAnimationProgress,
+      el: this.el.current,
+      onComplete: this.onComplete
+    });
+
+    this.engine.play();
+  }
+
+  stop() {
+    this.engine.stop();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { render } = this.props;
+
+    if (prevProps.render && !render) {
+      this.setState({ render }, () => this.stop());
+    }
+
+    if (!prevProps.render && render) {
+      this.setState({ render }, () => this.play(true));
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+  }
+
+  resetSvgPath() {
+    this.setState(prevState => ({
+      style: {
+        ...prevState.style,
+        strokeDasharray: 0,
+        strokeDashoffset: null
+      }
+    }));
+  }
+
+  onComplete(instance) {
+    instance.timesCompleted++;
+
+    const { loop } = instance;
+    if (loop === false) {
+      return this.resetSvgPath();
+    } else if (loop === true) {
+      return this.play();
+    } else if (instance.timesCompleted < loop) {
+      return this.play();
+    }
+  }
+
+  updateAnimationProgress(instance, animatedProps) {
+    this.setState(prevState => ({
+      style: {
+        ...prevState.style,
+        ...animatedProps
+      }
+    }));
   }
 
   render() {
@@ -94,6 +138,7 @@ class SVG extends React.Component {
     delete propsToPass.animate;
     delete propsToPass.render;
     delete propsToPass.children;
+    delete propsToPass.transform;
 
     return (
       <Type {...propsToPass} style={style} ref={this.el}>
@@ -114,7 +159,7 @@ SVG.propTypes = {
   animate: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
 };
 
-['circle', 'ellipse', 'path', 'line', 'polygon', 'polyline', 'rect', 'text'].forEach(type => {
+['circle', 'ellipse', 'path', 'line', 'polygon', 'polyline', 'rect', 'text', 'g'].forEach(type => {
   const func = props => <SVG type={type} {...props} />;
   SVG[type] = func;
   SVG[type].displayName = `SVG.${type}`;

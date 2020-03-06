@@ -29,7 +29,7 @@ export const toUnit = val => {
   return result ? result[1] : '';
 };
 
-export const auto = () => ([{ value: 'auto', unit: '', auto: true }]);
+export const auto = () => [{ value: 'auto', unit: '', auto: true }];
 
 export const unitToNumber = string => {
   if (is.null(string) || string === '') return null;
@@ -97,9 +97,9 @@ export const getValidDOMProperties = (properties, lookupList = validDOMPropertie
   return validProperties;
 };
 
-export const getPropertyProgress = (tween, easing) => {
-  const { from, to } = tween;
+export const getPropertyProgress = (tween, easing, isFirstCycle) => {
   const eased = (from, to) => from + easing * (to - from);
+  const { from, to } = tween;
 
   if (tween.color) {
     const rgb = {
@@ -117,20 +117,19 @@ export const getPropertyProgress = (tween, easing) => {
   return `${eased(from[0].value, to[0].value)}${unit}`;
 };
 
-export const getAnimationProgress = (tick, lastElapsed, animations, el) => {
+export const getAnimationProgress = (instance, tick, lastTick, animations, el) => {
   const getTween = (tweens, tick) => tweens.find(({ start, end }) => tick >= start && tick <= end);
 
   const animatedProps = {};
   const transforms = [];
+  const isFirstCycle = instance.timesCompleted === 0;
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
     let tween = getTween(tweens, tick);
-
     if (!tween) {
-      // check if lastElapsed matches any tween
-      // in order to complete animation at 100%
-      tween = getTween(tweens, lastElapsed);
+      // check if lastTick matches any tween in order to complete animation at 100%
+      tween = getTween(tweens, lastTick);
       if (!tween) return;
     }
 
@@ -148,9 +147,10 @@ export const getAnimationProgress = (tick, lastElapsed, animations, el) => {
     } else if (property === 'strokeDashoffset') {
       const pathLength = getSvgElLength(el);
       animatedProps['strokeDasharray'] = pathLength;
-      animatedProps['strokeDashoffset'] = (getPropertyProgress(tween, easing) / 100) * pathLength;
+      animatedProps['strokeDashoffset'] =
+        (getPropertyProgress(tween, easing, isFirstCycle) / 100) * pathLength;
     } else {
-      animatedProps[property] = getPropertyProgress(tween, easing);
+      animatedProps[property] = getPropertyProgress(tween, easing, isFirstCycle);
     }
   });
 
@@ -190,7 +190,6 @@ export const getStartingValues = (element, transformFrom, animatableProps) => {
             unit: ''
           }))
         : transformFrom.domProperties[property];
-
       return;
     }
 

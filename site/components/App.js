@@ -12,6 +12,7 @@ import RouteTransitionDemo from 'site/demo/RouteTransitionDemo';
 import NotificationsDemo from 'site/demo/NotificationsDemo';
 import Pulsing from 'site/demo/Pulsing';
 import RotatingCircles from 'site/demo/RotatingCircles';
+import RotatingSvg from 'site/demo/RotatingSvg';
 import 'site/style/demo.scss';
 
 (function() {
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/group" component={GroupDemo} />
         <Route path="/pulsing" component={Pulsing} />
         <Route path="/rotating-circles" component={RotatingCircles} />
+        <Route path="/rotating-svg" component={RotatingSvg} />
       </Switch>
     </Router>
   );
