@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Engine from './engine';
 import { is } from './utils';
@@ -13,17 +13,40 @@ class Observer extends React.Component {
       render: props.render
     };
 
+    this.unmounted = false;
+    this.onComplete = this.onComplete.bind(this);
     this.updateAnimationProgress = this.updateAnimationProgress.bind(this);
   }
 
-  addListeners() {
+  componentDidMount() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
+
+    if (this.state.render) {
+      this.animateMounting();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { render } = this.props;
+
+    if (!prevProps.render && render) {
+      // queue mount animation after state update
+      this.setState({ render: true }, this.animateMounting);
+    }
+
+    if (prevProps.render && !render) {
+      this.animateUnmounting();
+    }
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   handleVisibilityChange() {
-    if (this.engine) {
-      this.engine.handleVisibility(document.visibilityState);
-    }
+    if (!this.engine) return;
+    this.engine.handleVisibility(document.visibilityState);
   }
 
   parseMount() {
@@ -40,28 +63,6 @@ class Observer extends React.Component {
 
     const el = ReactDOM.findDOMNode(this);
     return Parser.parse(el, options);
-  }
-
-  componentDidMount() {
-    this.addListeners();
-
-    if (this.state.render) {
-      this.animateMounting();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { props } = this;
-
-    if (!prevProps.render && props.render) {
-      // queue mount animation after state update
-      this.setState({ render: true }, this.animateMounting);
-    }
-
-    if (prevProps.render && !props.render) {
-      // after animation finishes we'll render null to remove Observer from DOM
-      this.animateUnmounting();
-    }
   }
 
   animateMounting() {
@@ -83,35 +84,33 @@ class Observer extends React.Component {
 
     this.engine = new Engine({
       instance,
-      animate: this.updateAnimationProgress
+      animate: this.updateAnimationProgress,
+      onComplete: this.onComplete
     });
 
     this.engine.play();
   }
 
-  onProgressUpdateCallback(instance) {
-    if (instance.progress < 1) return;
-
+  onComplete(instance) {
+    // unmounting animation has completed
     if (instance === this.unmount) {
-      // unmounting animation has completed
       instance.events.onUnmountEnd();
-      return this.setState({ render: false });
+      if (!this.unmounted) {
+        this.setState({ render: false });
+      }
+    } else {
+      // mounting animation has completed
+      instance.events.onMountEnd();
     }
-
-    // mounting animation has completed
-    instance.events.onMountEnd();
   }
 
   updateAnimationProgress(instance, animatedProps) {
-    this.setState(
-      prevState => ({
-        style: {
-          ...prevState.style,
-          ...animatedProps
-        }
-      }),
-      () => this.onProgressUpdateCallback(instance)
-    );
+    this.setState(prevState => ({
+      style: {
+        ...prevState.style,
+        ...animatedProps
+      }
+    }));
   }
 
   renderTag() {

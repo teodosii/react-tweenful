@@ -24,17 +24,13 @@ class SVG extends React.Component {
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
   }
 
-  addListeners() {
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
-  }
-
   handleVisibilityChange() {
     if (!this.engine) return;
     this.engine.handleVisibility(document.visibilityState);
   }
 
   componentDidMount() {
-    this.addListeners();
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
     if (!this.state.render) return;
 
     this.setState(
@@ -55,8 +51,11 @@ class SVG extends React.Component {
     }
 
     if (reset) {
-      this.instance = Parser.parse(this.el.current, this.props, this.transformFrom);
-      // console.log(this.instance);
+      this.instance = Parser.parse(
+        this.el.current,
+        this.props,
+        this.transformFrom
+      );
     }
 
     this.engine = new Engine({
@@ -66,6 +65,7 @@ class SVG extends React.Component {
       el: this.el.current,
       onComplete: this.onComplete
     });
+
     this.engine.play();
   }
 
@@ -76,9 +76,17 @@ class SVG extends React.Component {
   componentDidUpdate(prevProps) {
     const { render } = this.props;
 
-    if (prevProps.render ^ render) {
-      this.setState({ render }, () => render ? this.play(true) : this.stop());
+    if (prevProps.render && !render) {
+      this.setState({ render }, () => this.stop());
     }
+
+    if (!prevProps.render && render) {
+      this.setState({ render }, () => this.play(true));
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   resetSvgPath() {
@@ -92,11 +100,10 @@ class SVG extends React.Component {
   }
 
   onComplete(instance) {
-    // console.log("END");
     instance.timesCompleted++;
 
     const { loop } = instance;
-    if (loop === false || loop === 0) {
+    if (loop === false) {
       return this.resetSvgPath();
     } else if (loop === true) {
       return this.play();
@@ -106,7 +113,6 @@ class SVG extends React.Component {
   }
 
   updateAnimationProgress(instance, animatedProps) {
-    // if (instance.timesCompleted <= 1 && this.props.id === 1) console.log({ animatedProps });
     this.setState(prevState => ({
       style: {
         ...prevState.style,

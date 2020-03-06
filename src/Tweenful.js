@@ -31,17 +31,13 @@ class Tweenful extends React.Component {
     this.onComplete = this.onComplete.bind(this);
   }
 
-  addListeners() {
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
-  }
-
   handleVisibilityChange() {
     if (!this.engine) return;
     this.engine.handleVisibility(document.visibilityState);
   }
 
   componentDidMount() {
-    this.addListeners();
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
     if (this.state.render) {
       this.play(true);
@@ -56,7 +52,7 @@ class Tweenful extends React.Component {
     }
 
     if (prevProps.render ^ render) {
-      this.setState({ render }, () => render ? this.play(true) : this.stop());
+      this.setState({ render }, () => (render ? this.play(true) : this.stop()));
     }
 
     if (prevProps.paused ^ paused) {
@@ -64,14 +60,19 @@ class Tweenful extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+  }
+
   onComplete(instance) {
-    const { loop } = instance;
+    const { loop, timesCompleted } = instance;
 
-    if (!loop) return;
-    if (isNaN(loop)) return this.play();
+    if (loop === false) return;
+    if (loop === true) {
+      return this.play();
+    }
 
-    instance.timesCompleted++;
-    if (instance.timesCompleted < loop) {
+    if (timesCompleted < loop) {
       return this.play();
     }
   }
