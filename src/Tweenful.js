@@ -67,7 +67,7 @@ class Tweenful extends React.Component {
   onComplete(instance) {
     const { loop, timesCompleted } = instance;
 
-    if (loop === false) return;
+    if (!loop) return;
     if (loop === true) {
       return this.play();
     }

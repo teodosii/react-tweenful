@@ -9,11 +9,11 @@ const modulo = (delay, duration) => {
 };
 
 const computeProgressTick = (instance) => {
-  const { timesCompleted, duration, loop } = instance;
-  const delay = Math.abs(instance.delay);
-
   // ignore negative delay after the first animation occurred
-  if (timesCompleted > 0) return 0;
+  if (instance.delay >= 0 || instance.timesCompleted > 0) return 0;
+
+  const { duration, loop } = instance;
+  const delay = Math.abs(instance.delay);
 
   if (loop === true) {
     return modulo(delay, duration);
