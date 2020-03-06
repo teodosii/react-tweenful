@@ -15,14 +15,15 @@ import {
 class Parser {
   parse(el, options, transformFrom) {
     const animations = this.parseOptions(el, options, transformFrom);
+    const duration = Math.max(...animations.map(({ tweens }) => tweens[tweens.length - 1].end));
     const events = this.parseEvents(options);
 
     return {
+      duration,
       progress: 0,
       lastTick: 0,
       timesCompleted: 0,
       paused: false,
-      duration: options.duration,
       delay: options.delay || 0,
       loop: options.loop,
       direction: options.direction || 'normal',
