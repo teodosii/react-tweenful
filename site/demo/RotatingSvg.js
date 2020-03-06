@@ -36,8 +36,8 @@ const RotatingSvg = () => {
         type="g"
         className="circle"
         loop={true}
-        duration={WAVE_COUNT/2 * duration}
-        style={{ transformOrigin: "500px 500px" }}
+        duration={(WAVE_COUNT / 2) * duration}
+        style={{ transformOrigin: '500px 500px' }}
         easing="linear"
         animate={{ rotate: '360deg' }}
       >

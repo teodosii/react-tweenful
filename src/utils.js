@@ -99,11 +99,7 @@ export const getValidDOMProperties = (properties, lookupList = validDOMPropertie
 
 export const getPropertyProgress = (tween, easing, isFirstCycle) => {
   const eased = (from, to) => from + easing * (to - from);
-  const { to } = tween;
-
-  // on first cycle we might have negative delay
-  // which means we'll have a different starting from
-  const from = isFirstCycle && tween.startPos ? tween.startPos : tween.from;
+  const { from, to } = tween;
 
   if (tween.color) {
     const rgb = {
@@ -137,15 +133,12 @@ export const getAnimationProgress = (instance, tick, lastTick, animations, el) =
       if (!tween) return;
     }
 
-    // duration || tween.duration
-    const tweenDuration = isFirstCycle && tween.startDuration ? tween.startDuration : tween.duration;
-    const tweenProgress = calculateProgress(tick - tween.start, tweenDuration);
+    const tweenProgress = calculateProgress(tick - tween.start, tween.duration);
     const easing = tween.easing(tweenProgress);
 
     if (transformProps.indexOf(property) > -1) {
       const easedTransformValues = tween.to.map(({ value: to, unit }, index) => {
-        const { value: from } =
-          isFirstCycle && tween.startPos ? tween.startPos[index] : tween.from[index];
+        const { value: from } = tween.from[index];
         const eased = from + easing * (to - from);
         return `${eased}${unit}`;
       });

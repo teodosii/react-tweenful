@@ -1,11 +1,33 @@
 import { getAnimationProgress, calculateProgress } from './utils';
 
-const getDuration = ({ timesCompleted, startDuration, duration }) => {
-  if (!timesCompleted && startDuration) {
-    return startDuration;
+const modulo = (delay, duration) => {
+  while (delay >= duration) {
+    delay -= duration;
   }
 
-  return duration;
+  return delay;
+};
+
+const computeProgressTick = (instance) => {
+  const { timesCompleted, duration, loop } = instance;
+  const delay = Math.abs(instance.delay);
+
+  // ignore negative delay after the first animation occurred
+  if (timesCompleted > 0) return 0;
+
+  if (loop === true) {
+    return modulo(delay, duration);
+  } else if (loop === false) {
+    return delay > duration ? duration : modulo(delay, duration);
+  } else if (loop > 0) {
+    const totalDuration = loop * duration;
+
+    // delay might last longer than the animation itself
+    // else we'll just calculate the modulo
+    return delay > totalDuration ? duration : modulo(delay, duration);
+  }
+
+  return 0;
 };
 
 class Engine {
@@ -28,13 +50,32 @@ class Engine {
     state === 'visible' ? this.resume() : this.pause();
   }
 
+  updateTimesCompleted() {
+    const { instance } = this.options;
+    const { duration, delay, loop } = instance;
+
+    if (!instance.timesCompleted && delay < 0 && loop > 0) {
+      let absDelay = Math.abs(delay);
+      if (absDelay < duration) {
+        instance.timesCompleted++;
+      }
+
+      while (absDelay >= duration) {
+        absDelay -= duration;
+        instance.timesCompleted++;
+      }
+    } else {
+      instance.timesCompleted++;
+    }
+  }
+
   progress(now) {
     const {
       el,
       instance,
       animate,
       onComplete,
-      instance: { animations }
+      instance: { duration, animations }
     } = this.options;
 
     if (!this.startTime) {
@@ -42,8 +83,8 @@ class Engine {
       this.startTime = now;
     }
 
-    const duration = getDuration(instance);
-    const tick = now + this.lastTime - this.startTime;
+    const progressTick = computeProgressTick(instance);
+    const tick = now + progressTick + (this.lastTime - this.startTime);
 
     instance.time = tick;
     instance.progress = calculateProgress(tick, duration);
@@ -53,6 +94,7 @@ class Engine {
 
     if (instance.progress === 1) {
       instance.events.onAnimationEnd();
+      this.updateTimesCompleted();
       onComplete(instance);
     }
 
