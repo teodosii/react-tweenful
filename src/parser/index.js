@@ -12,8 +12,6 @@ import {
   parseEasing
 } from '../helpers';
 
-const toArray = data => (is.array(data) ? data : [data]);
-
 class Parser {
   parse(el, options, transformFrom) {
     const animations = this.parseOptions(el, options, transformFrom);
@@ -54,12 +52,27 @@ class Parser {
     return parsedEvents;
   }
 
+  parseAnimate({ animate, duration }) {
+    const result = [];
+    const arr = is.array(animate) ? animate : [animate];
+
+    arr.forEach(anim => {
+      if (typeof anim === "function") {
+        result.push(...anim(duration));
+      } else {
+        result.push(anim);
+      }
+    });
+
+    return result;
+  }
+
   parseOptions(el, options, transformFrom) {
     const args = {
       el,
       options,
       transformFrom,
-      animatable: options.animate || options.keyframes
+      animatable: this.parseAnimate(options)
     };
 
     return this.getAnimations(args);
@@ -156,19 +169,18 @@ class Parser {
   }
 
   getAnimations({ el, options, animatable, transformFrom }) {
-    const list = toArray(animatable);
-    const animatableProps = getAnimatableProperties(list);
+    const animatableProps = getAnimatableProperties(animatable);
     const from = getStartingValues(el, transformFrom, animatableProps);
     const animations = [];
 
-    list.forEach(animate => {
+    animatable.forEach(animate => {
       const domProps = getValidDOMProperties(Object.keys(animate), validKeyframeProps);
       const missingProps = animatableProps.filter(p => !domProps.includes(p));
       const iterableDOMProperties = [...domProps, ...missingProps];
 
       const config = {
         loop: options.loop,
-        duration: pickFirstNotNull(animate.duration, options.duration / list.length),
+        duration: pickFirstNotNull(animate.duration, options.duration / animatable.length),
         delay: pickFirstNotNull(animate.delay, options.delay, 0),
         endDelay: pickFirstNotNull(animate.endDelay, options.endDelay, 0),
         easing: animate.easing || options.easing,

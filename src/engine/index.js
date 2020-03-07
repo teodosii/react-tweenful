@@ -42,7 +42,7 @@ class Engine {
 
     if (instance.progress === 1) {
       instance.events.onAnimationEnd();
-      updateTimesCompleted();
+      updateTimesCompleted(instance);
       onComplete(instance);
     }
 

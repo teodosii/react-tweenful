@@ -10,7 +10,32 @@ import {
   transformProps
 } from './constants';
 
-export const percentage = (object) => ({ ...object });
+export const percentage = object => (duration) => {
+  const keys = Object.keys(object).map(i => parseInt(i.slice(0, -1), 10)).sort((a, b) => {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  });
+
+  const calculateDiff = index => {
+    const curr = keys[index];
+    const next = keys[index + 1];
+    return next - curr;
+  };
+
+  const parsedAnimate = [];
+  keys.forEach((key, index) => {
+    if (index + 1 === keys.length) return;
+    const current = object[`${key}%`];
+    const percentRange = calculateDiff(index);
+    parsedAnimate.push({
+      duration: (percentRange / 100) * duration,
+      ...current
+    });
+  });
+
+  return parsedAnimate;
+};
 
 export const find = (arr, e) => arr.find(a => e.key === a.key);
 
@@ -148,8 +173,7 @@ export const getAnimationProgress = (instance, tick, lastTick, animations, el) =
     } else if (property === 'strokeDashoffset') {
       const pathLength = getSvgElLength(el);
       animatedProps['strokeDasharray'] = pathLength;
-      animatedProps['strokeDashoffset'] =
-        (getPropertyProgress(tween, easing) / 100) * pathLength;
+      animatedProps['strokeDashoffset'] = (getPropertyProgress(tween, easing) / 100) * pathLength;
     } else {
       animatedProps[property] = getPropertyProgress(tween, easing);
     }
