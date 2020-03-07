@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Engine from './engine';
-import { is } from './utils';
+import { is } from './helpers';
 import Parser from './parser';
 
 class Observer extends React.Component {

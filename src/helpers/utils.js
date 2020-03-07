@@ -1,5 +1,5 @@
 import parseColor from 'color-parser';
-import easings from './easings';
+import easings from '../easings';
 import { getSvgElLength } from './svg-utils';
 import {
   colorProps,
@@ -9,6 +9,8 @@ import {
   regexExpressions,
   transformProps
 } from './constants';
+
+export const percentage = (object) => ({ ...object });
 
 export const find = (arr, e) => arr.find(a => e.key === a.key);
 
@@ -97,7 +99,7 @@ export const getValidDOMProperties = (properties, lookupList = validDOMPropertie
   return validProperties;
 };
 
-export const getPropertyProgress = (tween, easing, isFirstCycle) => {
+export const getPropertyProgress = (tween, easing) => {
   const eased = (from, to) => from + easing * (to - from);
   const { from, to } = tween;
 
@@ -122,7 +124,6 @@ export const getAnimationProgress = (instance, tick, lastTick, animations, el) =
 
   const animatedProps = {};
   const transforms = [];
-  const isFirstCycle = instance.timesCompleted === 0;
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
@@ -148,9 +149,9 @@ export const getAnimationProgress = (instance, tick, lastTick, animations, el) =
       const pathLength = getSvgElLength(el);
       animatedProps['strokeDasharray'] = pathLength;
       animatedProps['strokeDashoffset'] =
-        (getPropertyProgress(tween, easing, isFirstCycle) / 100) * pathLength;
+        (getPropertyProgress(tween, easing) / 100) * pathLength;
     } else {
-      animatedProps[property] = getPropertyProgress(tween, easing, isFirstCycle);
+      animatedProps[property] = getPropertyProgress(tween, easing);
     }
   });
 

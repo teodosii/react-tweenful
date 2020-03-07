@@ -1,8 +1,8 @@
 import parseColor from 'color-parser';
-import { getSvgElLength } from './svg-utils';
-import { colorProps, transformProps, validKeyframeProps } from './constants';
+import { colorProps, transformProps, validKeyframeProps } from '../helpers/constants';
 import {
   is,
+  getSvgElLength,
   normalizeTweenUnit,
   getValidDOMProperties,
   getAnimatableProperties,
@@ -10,12 +10,14 @@ import {
   getStartingValues,
   pickFirstNotNull,
   parseEasing
-} from './utils';
+} from '../helpers';
+
+const toArray = data => (is.array(data) ? data : [data]);
 
 class Parser {
   parse(el, options, transformFrom) {
     const animations = this.parseOptions(el, options, transformFrom);
-    const duration = Math.max(...animations.map(({ tweens }) => tweens[tweens.length - 1].end));
+    const duration = Math.max(...animations.map(({ tweens: t }) => t[t.length - 1].end));
     const events = this.parseEvents(options);
 
     return {
@@ -154,15 +156,14 @@ class Parser {
   }
 
   getAnimations({ el, options, animatable, transformFrom }) {
-    const list = is.array(animatable) ? animatable : [animatable];
+    const list = toArray(animatable);
     const animatableProps = getAnimatableProperties(list);
     const from = getStartingValues(el, transformFrom, animatableProps);
     const animations = [];
 
     list.forEach(animate => {
-      const keys = Object.keys(animate);
-      const domProps = getValidDOMProperties(keys, validKeyframeProps);
-      const missingProps = animatableProps.filter(prop => domProps.indexOf(prop) === -1);
+      const domProps = getValidDOMProperties(Object.keys(animate), validKeyframeProps);
+      const missingProps = animatableProps.filter(p => !domProps.includes(p));
       const iterableDOMProperties = [...domProps, ...missingProps];
 
       const config = {
@@ -170,13 +171,11 @@ class Parser {
         duration: pickFirstNotNull(animate.duration, options.duration / list.length),
         delay: pickFirstNotNull(animate.delay, options.delay, 0),
         endDelay: pickFirstNotNull(animate.endDelay, options.endDelay, 0),
-        easing: animate.easing || options.easing
-      };
+        easing: animate.easing || options.easing,
 
-      if (is.svg(el)) {
         // supply pathLength for path animations
-        config.pathLength = getSvgElLength(el);
-      }
+        pathLength: is.svg(el) ? getSvgElLength(el) : 0
+      };
 
       iterableDOMProperties.forEach(property => {
         const animation = animations.find(anim => anim.property === property);

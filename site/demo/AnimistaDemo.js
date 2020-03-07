@@ -1,5 +1,5 @@
 import React from 'react';
-import Tweenful from 'react-tweenful';
+import Tweenful, { percentage } from 'react-tweenful';
 
 const AnimistaDemo = () => {
   return (
@@ -8,15 +8,16 @@ const AnimistaDemo = () => {
         className="box-demo"
         duration={2000}
         easing="easeInOutCubic"
-        //* Will be overriden by translateX being first mentioned in `animate`
-        //* style={{ transform: 'rotate(45deg)' }}
-        //* Order of transforms should be given by 'from'
-        //* Defaults for transforms will be in the 'from' field
-        // transform={{ scale: 3 }}
         style={{ position: 'relative' }}
         animate={[
-          { left: '600px', delay: 1000 },
-          { top: '600px', delay: 500 }
+          percentage({
+            '0%': {},
+            '10%': {},
+            '30%': {},
+            '50%': {},
+            '80%': {},
+            '100%': {}
+          })
         ]}
         loop={3}
       ></Tweenful.div>

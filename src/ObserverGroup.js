@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Observer from './Observer';
-import { toArray, find } from './utils';
+import { toArray, find } from './helpers';
 
 class ObserverGroup extends React.Component {
   constructor(props) {

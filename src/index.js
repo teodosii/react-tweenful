@@ -2,11 +2,13 @@ import Tweenful from "./Tweenful";
 import Observer from "./Observer";
 import ObserverGroup from "./ObserverGroup";
 import SVG from "./SVG";
-
-export default Tweenful;
+import { percentage } from './helpers';
 
 export {
   SVG,
   Observer,
-  ObserverGroup
+  ObserverGroup,
+  percentage
 };
+
+export default Tweenful;

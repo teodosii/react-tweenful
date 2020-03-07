@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { parseStartingTransform } from './utils';
+import { parseStartingTransform } from './helpers';
 import Parser from './parser';
 import Engine from './engine';
 
