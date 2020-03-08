@@ -277,24 +277,3 @@ export const calculateProgress = (tick, duration) => {
 };
 
 export const getProgress = (tick, duration) => (tick === 0 ? 0 : tick / duration);
-
-export const transformMapping = {
-  translate: (x, y) => (is.null(y) ? `translate(${x})` : `translate(${x}, ${y})`),
-  translate3d: (x, y, z) => `translate3d(${x}, ${y}, ${z})`,
-  translateX: x => `translateX(${x})`,
-  translateY: y => `translateY(${y})`,
-  translateZ: z => `translateZ(${z})`,
-  skew: (x, y) => (is.null(y) ? `skew(${x})` : `skew(${x}, ${y})`),
-  skewX: x => `skewX(${x})`,
-  skewY: y => `skewY(${y})`,
-  scale: (x, y) => (is.null(y) ? `scale(${x})` : `scale(${x}, ${y})`),
-  scale3d: (x, y, z) => `scale3d(${x}, ${y}, ${z})`,
-  scaleX: x => `scaleX(${x})`,
-  scaleY: y => `scaleY(${y})`,
-  scaleZ: z => `scaleZ(${z})`,
-  rotate: angle => `rotate(${angle})`,
-  rotate3d: (x, y, z, angle) => `rotate3d(${x}, ${y}, ${z}, ${angle})`,
-  rotateX: angle => `rotateX(${angle})`,
-  rotateY: angle => `rotateY(${angle})`,
-  rotateZ: angle => `rotateZ(${angle})`
-};
