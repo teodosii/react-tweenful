@@ -10,12 +10,14 @@ import {
   transformProps
 } from './constants';
 
-export const percentage = object => (duration) => {
-  const keys = Object.keys(object).map(i => parseInt(i.slice(0, -1), 10)).sort((a, b) => {
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
-  });
+export const percentage = object => duration => {
+  const keys = Object.keys(object)
+    .map(i => parseInt(i.slice(0, -1), 10))
+    .sort((a, b) => {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    });
 
   const calculateDiff = index => {
     const curr = keys[index];
@@ -26,11 +28,20 @@ export const percentage = object => (duration) => {
   const parsedAnimate = [];
   keys.forEach((key, index) => {
     if (index + 1 === keys.length) return;
-    const current = object[`${key}%`];
+
+    if (index === 0) {
+      parsedAnimate.push({
+        duration: 0,
+        ...object[`${key}%`]
+      });
+    }
+
+    const nextKey = keys[index + 1];
+    const next = object[`${nextKey}%`];
     const percentRange = calculateDiff(index);
     parsedAnimate.push({
       duration: (percentRange / 100) * duration,
-      ...current
+      ...next
     });
   });
 
@@ -98,7 +109,7 @@ export const parseStartingTransform = ({ transform }) => {
 
 export const convertPixelsToUnit = (el, value, conversionUnit) => {
   const unit = toUnit(value);
-  if ([unit, 'deg', 'rad', 'turn'].indexOf(unit)) return value;
+  if (['deg', 'rad', 'turn'].includes(unit) || conversionUnit === 'px') return value;
 
   const baseline = 100;
   const tempEl = document.createElement(el.tagName);

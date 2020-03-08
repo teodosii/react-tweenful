@@ -57,7 +57,7 @@ class Parser {
     const arr = is.array(animate) ? animate : [animate];
 
     arr.forEach(anim => {
-      if (typeof anim === "function") {
+      if (typeof anim === 'function') {
         result.push(...anim(duration));
       } else {
         result.push(anim);
@@ -184,7 +184,6 @@ class Parser {
         delay: pickFirstNotNull(animate.delay, options.delay, 0),
         endDelay: pickFirstNotNull(animate.endDelay, options.endDelay, 0),
         easing: animate.easing || options.easing,
-
         // supply pathLength for path animations
         pathLength: is.svg(el) ? getSvgElLength(el) : 0
       };

@@ -7,12 +7,14 @@ import Main from 'site/components/Main';
 import ObserverDemo from 'site/demo/ObserverDemo';
 import SvgDemo from 'site/demo/SvgDemo';
 import AnimistaDemo from 'site/demo/AnimistaDemo';
+import LoadingCircles from 'site/demo/LoadingCircles';
 import GroupDemo from 'site/demo/GroupDemo';
 import RouteTransitionDemo from 'site/demo/RouteTransitionDemo';
 import NotificationsDemo from 'site/demo/NotificationsDemo';
 import Pulsing from 'site/demo/Pulsing';
 import RotatingCircles from 'site/demo/RotatingCircles';
 import RotatingSvg from 'site/demo/RotatingSvg';
+import Gradients from 'site/demo/Gradients';
 import 'site/style/demo.scss';
 
 (function() {
@@ -47,10 +49,12 @@ const App = () => {
         <Route path="/observer" component={ObserverDemo} />
         <Route path="/svg" component={SvgDemo} />
         <Route path="/animista" component={AnimistaDemo} />
+        <Route path="/loading-circles" component={LoadingCircles} />
         <Route path="/group" component={GroupDemo} />
         <Route path="/pulsing" component={Pulsing} />
         <Route path="/rotating-circles" component={RotatingCircles} />
         <Route path="/rotating-svg" component={RotatingSvg} />
+        <Route path="/gradients" component={Gradients} />
       </Switch>
     </Router>
   );

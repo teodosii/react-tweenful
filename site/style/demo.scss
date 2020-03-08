@@ -212,7 +212,101 @@ $danger_dark: #bd1120;
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #1ED4E1;
+    background-color: #1ed4e1;
     position: absolute;
   }
+}
+
+.loading-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f4d5;
+}
+
+.loading-circles-container {
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  filter: url('#goo');
+
+  .dot {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    &.dot-1 {
+      background-color: #ffe386;
+    }
+    &.dot-3 {
+      background-color: #f74d75;
+    }
+    &.dot-2 {
+      background-color: #10beae;
+    }
+  }
+}
+
+.gradients-container {
+  height: 100%;
+
+  .row {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+  }
+
+  .box {
+    height: 500px;
+    max-height: 60%;
+    width: 10%;
+    float: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 4px;
+  }
+}
+
+.gradiant1 {
+  background-image: linear-gradient(to bottom, #f8e739, #f1d42d, #eac222, #e1b019, #d89e10);
+}
+.gradiant2 {
+  background-image: linear-gradient(to bottom, #d89e10, #e28f00, #ec7f00, #f66b00, #ff5200);
+}
+.gradiant3 {
+  background-image: linear-gradient(to bottom, #ff5200, #f84603, #f13806, #e92909, #e2130b);
+}
+.gradiant4 {
+  background-image: linear-gradient(to bottom, #e2130b, #e1110c, #e00f0d, #df0c0d, #de090e);
+}
+.gradiant5 {
+  background-image: linear-gradient(to bottom, #de090e, #df002a, #dc003e, #d60051, #ce0061);
+}
+.gradiant6 {
+  background-image: linear-gradient(to bottom, #ce0061, #d50079, #d60094, #d000b3, #c115d4);
+}
+.gradiant7 {
+  background-image: linear-gradient(to bottom, #c115d4, #af0cd6, #9b07d8, #8508da, #6a0ddc);
+}
+.gradiant8 {
+  background-image: linear-gradient(to bottom, #6a0ddc, #5f0ddd, #530edd, #450fde, #3210de);
+}
+.gradiant9 {
+  background-image: linear-gradient(to bottom, #3210de, #2a1cdc, #2124d9, #172ad7, #0c2fd4);
+}
+.gradiant10 {
+  background-image: linear-gradient(to bottom, #0c2fd4, #0045d8, #0056d9, #0065d8, #1b73d5);
 }
