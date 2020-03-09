@@ -115,7 +115,7 @@ export const parseStartingTransform = ({ transform }) => {
   domProperties.forEach(prop => (props[prop] = unitToNumber(transform[prop])));
 
   return {
-    order: domProperties.filter(prop => prop !== 'transformOrigin'),
+    order: domProperties,
     domProperties: props
   };
 };

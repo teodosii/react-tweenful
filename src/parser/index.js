@@ -17,7 +17,7 @@ class Parser {
     const animations = this.parseOptions(el, options, transformFrom);
     const duration = Math.max(...animations.map(({ tweens: t }) => t[t.length - 1].end));
     const events = this.parseEvents(options);
-
+    
     return {
       duration,
       progress: 0,
@@ -149,7 +149,7 @@ class Parser {
       tween.end = lastTween.end + end;
 
       if (!isTransformProperty) {
-        normalizeTweenUnit(el, tween.from, tween.to);
+        normalizeTweenUnit(el, tween.from, tween.to, property);
       }
 
       return tween;
@@ -162,7 +162,7 @@ class Parser {
     tween.end = end;
 
     if (!isTransformProperty) {
-      normalizeTweenUnit(el, tween.from, tween.to);
+      normalizeTweenUnit(el, tween.from, tween.to, property);
     }
 
     return tween;

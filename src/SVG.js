@@ -100,8 +100,6 @@ class SVG extends React.Component {
   }
 
   onComplete(instance) {
-    instance.timesCompleted++;
-
     const { loop } = instance;
     if (loop === false) {
       return this.resetSvgPath();
@@ -156,7 +154,7 @@ SVG.propTypes = {
   render: PropTypes.bool,
   type: PropTypes.string,
   children: PropTypes.node,
-  animate: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
+  animate: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.func])
 };
 
 ['circle', 'ellipse', 'path', 'line', 'polygon', 'polyline', 'rect', 'text', 'g'].forEach(type => {

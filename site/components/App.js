@@ -15,6 +15,7 @@ import Pulsing from 'site/demo/Pulsing';
 import RotatingCircles from 'site/demo/RotatingCircles';
 import RotatingSvg from 'site/demo/RotatingSvg';
 import Gradients from 'site/demo/Gradients';
+import BouncingBalls from 'site/demo/BouncingBalls';
 import 'site/style/demo.scss';
 
 (function() {
@@ -55,6 +56,7 @@ const App = () => {
         <Route path="/rotating-circles" component={RotatingCircles} />
         <Route path="/rotating-svg" component={RotatingSvg} />
         <Route path="/gradients" component={Gradients} />
+        <Route path="/bouncing-balls" component={BouncingBalls} />
       </Switch>
     </Router>
   );

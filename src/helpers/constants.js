@@ -34,8 +34,7 @@ export const transformProps = [
   'rotate3d',
   'rotateX',
   'rotateY',
-  'rotateZ',
-  'transformOrigin'
+  'rotateZ'
 ];
 
 export const validKeyframeProps = [
