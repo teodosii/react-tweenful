@@ -90,6 +90,7 @@
     "react": "^16.0.0"
   },
   "dependencies": {
+    "bezier-easing": "^2.1.0",
     "color-parser": "^0.1.0",
     "prop-types": "^15.6.2"
   }

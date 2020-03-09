@@ -1,12 +1,12 @@
 import React from 'react';
-import { SVG, percentage } from 'react-tweenful';
+import { SVG, percentage, elastic } from 'react-tweenful';
 
 const circles = new Array(10).fill(0).map((_e, i) => ({
   loop: true,
   fill: `hsl(${(i + 1) * 20 - 20}, 70%, 70%)`,
   delay: ((i + 1) * 1500) / -10,
   duration: 1500,
-  easing: 'linear',
+  easing: elastic(2, 0.9),
   transform: {
     translate: '0 100px'
   },
@@ -18,7 +18,7 @@ const circles = new Array(10).fill(0).map((_e, i) => ({
     '50%': { translate: '0px -100px', scale: 0.3 },
     '100%': { translate: '0px 100px', scale: 1 }
   }),
-  r: 35,
+  r: 50,
   cx: 100 * i + 50,
   cy: 250
 }));

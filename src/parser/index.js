@@ -149,7 +149,7 @@ class Parser {
       tween.end = lastTween.end + end;
 
       if (!isTransformProperty) {
-        normalizeTweenUnit(el, tween.from, tween.to, property);
+        normalizeTweenUnit(el, tween);
       }
 
       return tween;
@@ -162,7 +162,7 @@ class Parser {
     tween.end = end;
 
     if (!isTransformProperty) {
-      normalizeTweenUnit(el, tween.from, tween.to, property);
+      normalizeTweenUnit(el, tween);
     }
 
     return tween;

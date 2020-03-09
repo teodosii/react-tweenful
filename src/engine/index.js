@@ -36,7 +36,7 @@ class Engine {
 
     instance.time = tick;
     instance.progress = calculateProgress(tick, duration);
-    const animatedProps = getAnimationProgress(instance, tick, this.lastTick, animations, el);
+    const animatedProps = getAnimationProgress(tick, this.lastTick, animations, el);
 
     animate(instance, animatedProps);
 

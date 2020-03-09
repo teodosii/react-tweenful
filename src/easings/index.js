@@ -2,6 +2,18 @@ const pow = Math.pow;
 const c1 = 1.70158;
 const c2 = c1 * 1.525;
 
+export const elastic = (amplitude, period) => t => {
+  const a = minMax(amplitude, 1, 10);
+  const p = minMax(period, 0.1, 2);
+
+  var s = Math.asin((1 / a) * p);
+  return (
+    ((t = t * 2 - 1) < 0
+      ? a * Math.pow(2, 10 * t) * Math.sin((s - t) / p)
+      : 2 - a * Math.pow(2, -10 * t) * Math.sin((s + t) / p)) / 2
+  );
+};
+
 const minMax = (val, min, max) => {
   return Math.min(Math.max(val, min), max);
 };
@@ -90,19 +102,6 @@ export default {
     let b = 4;
     while (t < ((pow2 = Math.pow(2, --b)) - 1) / 11);
     return 1 / Math.pow(4, 3 - b) - 7.5625 * Math.pow((pow2 * 3 - 2) / 22 - t, 2);
-  },
-  elastic: t => {
-    const amplitude = 1;
-    const period = 0.1;
-    const a = minMax(amplitude, 1, 10);
-    const p = minMax(period, 0.1, 2);
-
-    var s = Math.asin((1 / a) * p);
-    return (
-      ((t = t * 2 - 1) < 0
-        ? a * Math.pow(2, 10 * t) * Math.sin((s - t) / p)
-        : 2 - a * Math.pow(2, -10 * t) * Math.sin((s + t) / p)) / 2
-    );
   },
   easeOutBounce: bounceOut
 };

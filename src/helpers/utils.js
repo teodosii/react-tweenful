@@ -83,12 +83,20 @@ export const unitToNumber = string => {
   });
 };
 
-export const normalizeTweenUnit = (el, tweenFrom, tweenTo) => {
+export const normalizeTweenUnit = (el, tween) => {
+  const { from: tweenFrom, to: tweenTo } = tween;
+
   for (let i = 0; i < tweenFrom.length; i += 1) {
     const from = tweenFrom[i];
     const to = tweenTo[i];
 
+    // color will return an array such as [255, 255, 255, 255]
+    if (is.null(from.unit) || is.null(to.unit)) continue;
+    // skip pixel to pixel conversion
     if (from.unit === 'px' && to.unit === 'px') continue;
+    // skip unitless conversion for now, such as opacity
+    if (from.unit === '' && to.unit === '') continue;
+
     if (to.unit === 'px' && from.auto) continue;
     if (from.unit === 'px' && to.auto) continue;
 
@@ -131,10 +139,10 @@ export const convertUnitToPixels = (el, value, conversionUnit) => {
   parentEl.appendChild(tempEl);
   tempEl.style.position = 'relative';
   tempEl.style.height = `${baseline}${conversionUnit}`;
-  const offset = tempEl.offsetHeight;  
+  const offset = tempEl.offsetHeight;
   parentEl.removeChild(tempEl);
 
-  return parseFloat(value) * offset / 100;
+  return (parseFloat(value) * offset) / 100;
 };
 
 export const getValidDOMProperties = (properties, lookupList = validDOMProperties) => {
@@ -168,7 +176,7 @@ export const getPropertyProgress = (tween, easing) => {
   return `${eased(from[0].value, to[0].value)}${unit}`;
 };
 
-export const getAnimationProgress = (instance, tick, lastTick, animations, el) => {
+export const getAnimationProgress = (tick, lastTick, animations, el) => {
   const getTween = (tweens, tick) => tweens.find(({ start, end }) => tick >= start && tick <= end);
 
   const animatedProps = {};
@@ -176,12 +184,9 @@ export const getAnimationProgress = (instance, tick, lastTick, animations, el) =
 
   animations.forEach(animate => {
     const { property, tweens } = animate;
-    let tween = getTween(tweens, tick);
-    if (!tween) {
-      // check if lastTick matches any tween in order to complete animation at 100%
-      tween = getTween(tweens, lastTick);
-      if (!tween) return;
-    }
+    const tween = getTween(tweens, tick) || getTween(tweens, lastTick);
+    // check if lastTick matches any tween in order to complete animation at 100%
+    if (!tween) return;
 
     const tweenProgress = calculateProgress(tick - tween.start, tween.duration);
     const easing = tween.easing(tweenProgress);
@@ -225,6 +230,18 @@ export const getAnimatableProperties = array => {
   return animatableProps;
 };
 
+const getTransformMapping = (transformFrom, mappedTransform, property) => {
+  if (is.null(transformFrom.domProperties[property])) {
+    // will help knowing where to start animating from (e.g. 0, 1)
+    return new Array(mappedTransform.argsMax).fill(0).map(() => ({
+      value: mappedTransform.start,
+      unit: ''
+    }));
+  }
+
+  return transformFrom.domProperties[property];
+};
+
 export const getStartingValues = (element, transformFrom, animatableProps) => {
   const defaultProperties = {};
   const computed = getComputedStyle(element);
@@ -232,13 +249,7 @@ export const getStartingValues = (element, transformFrom, animatableProps) => {
   animatableProps.forEach(property => {
     const mappedTransform = validTransforms[property];
     if (mappedTransform) {
-      defaultProperties[property] = is.null(transformFrom.domProperties[property])
-        ? // will help knowing where to start animating from (e.g. 0, 1)
-          new Array(mappedTransform.argsMax).fill(0).map(() => ({
-            value: mappedTransform.start,
-            unit: ''
-          }))
-        : transformFrom.domProperties[property];
+      defaultProperties[property] = getTransformMapping(transformFrom, mappedTransform, property);
       return;
     }
 
@@ -277,7 +288,13 @@ export const parseFunctionArguments = string => {
   return getRegexGroups(regex, string).map(value => value.trim());
 };
 
-export const parseEasing = easing => easings[easing];
+export const parseEasing = easing => {
+  if (typeof easing === 'function') {
+    return easing;
+  }
+
+  return easings[easing];
+};
 
 export const pickFirstNotNull = (...values) => {
   if (!values || !values.length) return null;

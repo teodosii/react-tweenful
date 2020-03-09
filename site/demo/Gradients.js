@@ -1,5 +1,5 @@
 import React from 'react';
-import Tweenful from 'react-tweenful';
+import Tweenful, { elastic } from 'react-tweenful';
 
 const Gradients = () => {
   const elements = new Array(10)
@@ -8,7 +8,7 @@ const Gradients = () => {
       <Tweenful.div
         className={`gradiant${i + 1} box`}
         loop={true}
-        easing="elastic"
+        easing={elastic(1, 0.1)}
         duration={3000}
         delay={i * 100}
         endDelay={(10 - i) * 100}
