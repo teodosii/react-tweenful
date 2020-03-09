@@ -266,7 +266,8 @@ export const getStartingValues = (element, transformFrom, animatableProps) => {
       return;
     }
 
-    defaultProperties[property] = unitToNumber(`${val}px`);
+    const unit = property === 'opacity' ? '' : 'px';
+    defaultProperties[property] = unitToNumber(`${val}${unit}`);
   });
 
   return defaultProperties;

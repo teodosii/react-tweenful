@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import Observer from 'react-tweenful/Observer';
-import Tweenful from 'react-tweenful/Tweenful';
+import Tweenful, { Observer, elastic } from 'react-tweenful';
+
+const props = {
+  delay: 200,
+  render: true,
+  duration: 1600,
+  easing: elastic(1, 0.1),
+  loop: false,
+  animate: { translateX: '400px' },
+  events: {
+    onAnimationStart: () => console.log('AnimationStart'),
+    onAnimationEnd: () => console.log('AnimationEnd')
+  }
+};
 
 const ObserverDemo = () => {
   const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    // unmount after 4500ms
-    setTimeout(() => setShouldRender(false), 8000);
+    setTimeout(() => setShouldRender(false), 3000);
   }, []);
 
   return (
@@ -20,18 +31,7 @@ const ObserverDemo = () => {
       easing="linear"
     >
       <div className="observer-demo">
-        <Tweenful.div
-          render={true}
-          className="box-demo"
-          duration={2200}
-          easing="linear"
-          animate={[{ translateX: '400px' }]}
-          loop={false}
-          events={{
-            onAnimationStart: () => console.log('AnimationStart'),
-            onAnimationEnd: () => console.log('AnimationEnd')
-          }}
-        ></Tweenful.div>
+        <Tweenful.div className="box-demo" {...props}></Tweenful.div>
       </div>
     </Observer>
   );
