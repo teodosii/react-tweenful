@@ -1,0 +1,330 @@
+$default: #007bff;
+$default_dark: #0562c7;
+$success: #28a745;
+$success_dark: #1f8838;
+$danger: #dc3545;
+$danger_dark: #bd1120;
+
+.group-container {
+  width: 600px;
+  height: 800px;
+  margin: 0 auto;
+  position: relative;
+
+  .red,
+  .blue {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .red {
+    z-index: 10;
+    background-color: #de2929;
+  }
+  .blue {
+    z-index: 15;
+    background-color: #3744f3;
+  }
+}
+
+.observer-demo {
+  padding: 20px 30px;
+
+  .box-demo {
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 0%;
+    background-color: #167fe0;
+    position: relative;
+    opacity: 1;
+  }
+}
+
+.animista {
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding: 10px;
+}
+
+.route-transition-demo {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+
+  .observer,
+  .key-wrapper,
+  .route-transition-demo,
+  .color-block {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .key-wrapper {
+    z-index: 10;
+    position: absolute;
+    max-width: 400px;
+    max-height: 600px;
+    &:last-child {
+      z-index: 100;
+    }
+  }
+
+  .nav-links {
+    list-style: none;
+    margin-bottom: 10px;
+    li {
+      font-size: 18px;
+      margin-right: 10px;
+      display: inline-block;
+    }
+  }
+}
+
+.notifications-demo {
+  width: 360px;
+  margin: 0 auto;
+
+  .actions {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .notification-content {
+    padding: 8px 15px;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .notification-default {
+    background-color: $default;
+    border-left: 8px solid $default_dark;
+    .notification-close {
+      background-color: $default;
+    }
+  }
+
+  .notification-success {
+    background-color: $success;
+    border-left: 8px solid $success_dark;
+    .notification-close {
+      background-color: $success;
+    }
+  }
+
+  .notification-danger {
+    background-color: $danger;
+    border-left: 8px solid $danger_dark;
+    .notification-close {
+      background-color: $danger;
+    }
+  }
+
+  .notification-item {
+    display: flex;
+    position: relative;
+    border-radius: 3px;
+    margin-bottom: 15px;
+    box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.2);
+    max-width: 100%;
+    cursor: default;
+
+    .notification-message {
+      color: #fff;
+      max-width: calc(100% - 15px);
+      font-size: 14px;
+      line-height: 150%;
+      word-wrap: break-word;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+
+    .notification-close {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+
+      &::after {
+        content: '\D7';
+        cursor: pointer;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 12px;
+        left: 50%;
+        top: 50%;
+      }
+    }
+  }
+}
+
+.pulsing-demo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background-color: transparent;
+  position: relative;
+
+  svg {
+    top: 0;
+    left: 0;
+    position: absolute;
+  }
+
+  .pulse-element {
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    background-image: radial-gradient(
+      circle closest-side,
+      rgba(237, 79, 79, 1),
+      rgba(237, 79, 79, 0.5)
+    );
+    border: solid 1px rgba(255, 255, 255, 0.8);
+    position: absolute;
+    left: 34px;
+    top: 34px;
+  }
+}
+
+.rotating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.rotating-circles {
+  position: relative;
+
+  .circle {
+    margin: -30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #1ed4e1;
+    position: absolute;
+  }
+}
+
+.loading-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f4d5;
+}
+
+.loading-circles-container {
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  filter: url('#goo');
+
+  .dot {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    &.dot-1 {
+      background-color: #ffe386;
+    }
+    &.dot-3 {
+      background-color: #f74d75;
+    }
+    &.dot-2 {
+      background-color: #10beae;
+    }
+  }
+}
+
+.gradients-container {
+  height: 100%;
+
+  .row {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+  }
+
+  .box {
+    height: 500px;
+    max-height: 60%;
+    width: 10%;
+    float: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 4px;
+  }
+}
+
+.gradiant1 {
+  background-image: linear-gradient(to bottom, #f8e739, #f1d42d, #eac222, #e1b019, #d89e10);
+}
+.gradiant2 {
+  background-image: linear-gradient(to bottom, #d89e10, #e28f00, #ec7f00, #f66b00, #ff5200);
+}
+.gradiant3 {
+  background-image: linear-gradient(to bottom, #ff5200, #f84603, #f13806, #e92909, #e2130b);
+}
+.gradiant4 {
+  background-image: linear-gradient(to bottom, #e2130b, #e1110c, #e00f0d, #df0c0d, #de090e);
+}
+.gradiant5 {
+  background-image: linear-gradient(to bottom, #de090e, #df002a, #dc003e, #d60051, #ce0061);
+}
+.gradiant6 {
+  background-image: linear-gradient(to bottom, #ce0061, #d50079, #d60094, #d000b3, #c115d4);
+}
+.gradiant7 {
+  background-image: linear-gradient(to bottom, #c115d4, #af0cd6, #9b07d8, #8508da, #6a0ddc);
+}
+.gradiant8 {
+  background-image: linear-gradient(to bottom, #6a0ddc, #5f0ddd, #530edd, #450fde, #3210de);
+}
+.gradiant9 {
+  background-image: linear-gradient(to bottom, #3210de, #2a1cdc, #2124d9, #172ad7, #0c2fd4);
+}
+.gradiant10 {
+  background-image: linear-gradient(to bottom, #0c2fd4, #0045d8, #0056d9, #0065d8, #1b73d5);
+}
+
+.bouncing-balls {
+  width: 100%;
+  height: 100%;
+  background: hsl(40, 50%, 95%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  svg {
+    width: 100vw;
+    height: 80vh;
+  }
+  circle {
+    transform-origin: 50% 50%;
+  }
+}
