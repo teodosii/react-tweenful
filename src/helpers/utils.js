@@ -83,13 +83,26 @@ export const unitToNumber = string => {
   });
 };
 
-export const normalizeTweenUnit = (el, from, to) => {
-  for (let i = 0; i < from.length; i += 1) {
-    if (from[i].unit === to[i].unit) continue;
-    if (from[i].auto || to[i].auto) continue;
-    const convertedValue = convertPixelsToUnit(el, from[i].value, to[i].unit);
-    from[i].value = convertedValue;
-    from[i].unit = to[i].unit;
+export const normalizeTweenUnit = (el, tweenFrom, tweenTo) => {
+  for (let i = 0; i < tweenFrom.length; i += 1) {
+    const from = tweenFrom[i];
+    const to = tweenTo[i];
+
+    if (from.unit === 'px' && to.unit === 'px') continue;
+    if (to.unit === 'px' && from.auto) continue;
+    if (from.unit === 'px' && to.auto) continue;
+
+    if (from.unit !== 'px') {
+      const convertedValue = convertUnitToPixels(el, from.value, from.unit);
+      from.value = convertedValue;
+      from.unit = 'px';
+    }
+
+    if (to.unit !== 'px') {
+      const convertedValue = convertUnitToPixels(el, to.value, to.unit);
+      to.value = convertedValue;
+      to.unit = 'px';
+    }
   }
 };
 
@@ -107,21 +120,21 @@ export const parseStartingTransform = ({ transform }) => {
   };
 };
 
-export const convertPixelsToUnit = (el, value, conversionUnit) => {
+export const convertUnitToPixels = (el, value, conversionUnit) => {
   const unit = toUnit(value);
-  if (['deg', 'rad', 'turn'].includes(unit) || conversionUnit === 'px') return value;
+  if (['deg', 'rad', 'turn'].includes(unit)) return;
 
   const baseline = 100;
-  const tempEl = document.createElement(el.tagName);
+  const tempEl = el.cloneNode();
   const parentEl = el.parentNode && el.parentNode !== document ? el.parentNode : document.body;
 
   parentEl.appendChild(tempEl);
   tempEl.style.position = 'relative';
-  tempEl.style.width = baseline + conversionUnit;
-  const factor = baseline / tempEl.offsetWidth;
+  tempEl.style.height = `${baseline}${conversionUnit}`;
+  const offset = tempEl.offsetHeight;  
   parentEl.removeChild(tempEl);
-  const result = factor * parseFloat(value);
-  return result;
+
+  return parseFloat(value) * offset / 100;
 };
 
 export const getValidDOMProperties = (properties, lookupList = validDOMProperties) => {
@@ -242,7 +255,7 @@ export const getStartingValues = (element, transformFrom, animatableProps) => {
       return;
     }
 
-    defaultProperties[property] = unitToNumber(val);
+    defaultProperties[property] = unitToNumber(`${val}px`);
   });
 
   return defaultProperties;

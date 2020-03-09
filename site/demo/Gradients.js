@@ -12,7 +12,7 @@ const Gradients = () => {
         duration={3000}
         delay={i * 100}
         endDelay={(10 - i) * 100}
-        animate={[{ height: '100px' }, { height: ['100px', 'auto'] }]}
+        animate={[{ height: '20%' }, { height: ['20%', 'auto'] }]}
         key={i}
       ></Tweenful.div>
     ));
