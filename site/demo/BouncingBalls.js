@@ -18,7 +18,7 @@ const circles = new Array(10).fill(0).map((_e, i) => ({
     '50%': { translate: '0px -100px', scale: 0.3 },
     '100%': { translate: '0px 100px', scale: 1 }
   }),
-  r: 25,
+  r: 35,
   cx: 100 * i + 50,
   cy: 250
 }));
