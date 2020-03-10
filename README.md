@@ -1,5 +1,7 @@
 # react-tweenful
 
+**README IN PROGRESS!**
+
 Looking for an amazing React library for animating stuff? Look no more, we've got you covered!
 
 ## Demo
@@ -26,6 +28,47 @@ https://teodosii.github.io/react-tweenful/
 Usage of `Observer` component together with `Tweenful`. Animate movement with `Tweenful` and subscribe to mount and unmount with `Observer`.
 
 ![Observer](https://github.com/teodosii/react-tweenful/raw/master/gif/observer.gif "Observer")
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import Tweenful, { Observer, elastic } from 'react-tweenful';
+
+const props = {
+  delay: 200,
+  render: true,
+  duration: 1600,
+  easing: elastic(1, 0.1),
+  loop: false,
+  animate: { translateX: '400px' },
+  events: {
+    onAnimationStart: () => console.log('AnimationStart'),
+    onAnimationEnd: () => console.log('AnimationEnd')
+  }
+};
+
+const ObserverDemo = () => {
+  const [shouldRender, setShouldRender] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setShouldRender(false), 3000);
+  }, []);
+
+  return (
+    <Observer
+      render={shouldRender}
+      duration={1200}
+      style={{ opacity: 0 }}
+      mount={{ opacity: 1 }}
+      unmount={[{ opacity: 0 }]}
+      easing="linear"
+    >
+      <div className="observer-demo">
+        <Tweenful.div className="box-demo" {...props}></Tweenful.div>
+      </div>
+    </Observer>
+  );
+};
+```
 
 ### ObserverGroup
 
@@ -56,9 +99,77 @@ Usage of `ObserverGroup` component to watch for mounting and unmounting over a l
 
 ### Animate route transition
 
+Usage of `ObserverGroup` to animate route change
+
 ![Routing](https://github.com/teodosii/react-tweenful/raw/master/gif/transition.gif "Routing")
 
+```jsx
+import React from 'react';
+import { Route, Switch, NavLink } from 'react-router-dom';
+import ObserverGroup from 'react-tweenful/ObserverGroup';
+import Observer from 'react-tweenful/Observer';
+
+const colors = {
+  red: '#EE4266',
+  yellow: '#FDB833',
+  blue: '#296EB4',
+  green: '#0EAD69'
+};
+
+const Red = () => <div className="color-block" style={{ backgroundColor: colors.red }}></div>;
+const Yellow = () => <div className="color-block" style={{ backgroundColor: colors.yellow }}></div>;
+const Blue = () => <div className="color-block" style={{ backgroundColor: colors.blue }}></div>;
+const Green = () => <div className="color-block" style={{ backgroundColor: colors.green }}></div>;
+
+class RouteTransitionDemo extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const { location } = this.props;
+
+    return (
+      <div className="route-transition-demo">
+        <ul className="nav-links">
+          <li><NavLink to="/transition/red">Red</NavLink></li>
+          <li><NavLink to="/transition/yellow">Yellow</NavLink></li>
+          <li><NavLink to="/transition/blue">Blue</NavLink></li>
+          <li><NavLink to="/transition/green">Green</NavLink></li>
+        </ul>
+        <div className="observer">
+          <ObserverGroup>
+            <Observer.div
+              key={location.pathname}
+              className="key-wrapper"
+              duration={1000}
+              style={{ opacity: 0 }}
+              mount={{ opacity: 1 }}
+              unmount={{ opacity: 0 }}
+              easing={'easeOutQuad'}
+            >
+              <Switch location={location}>
+                <Route exact path={`/transition/red`} component={Red} />
+                <Route exact path={`/transition/green`} component={Green} />
+                <Route exact path={`/transition/blue`} component={Blue} />
+                <Route exact path={`/transition/yellow`} component={Yellow} />
+                <Route render={() => <div>Not Found</div>} />
+              </Switch>
+            </Observer.div>
+          </ObserverGroup>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default RouteTransitionDemo;
+
+```
+
 ### Prism
+
+`react-tweenful` in action powering a super awesome looking animation.
 
 ![Prism](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-svg.gif "Prism")
 
@@ -128,6 +239,8 @@ const RotatingSvg = () => {
 
 ### Gradients
 
+An example using `elastic` easing to animate gradient boxes.
+
 ![Gradients](https://github.com/teodosii/react-tweenful/raw/master/gif/gradients.gif "Gradients")
 
 ```jsx
@@ -159,6 +272,8 @@ const Gradients = () => {
 ```
 
 ### Bouncing Balls
+
+Bouncing balls illustrate negative delay support in `react-tweenful`
 
 ![Bouncing Balls](https://github.com/teodosii/react-tweenful/raw/master/gif/bouncing-ball.gif "Bouncing Balls")
 
@@ -206,6 +321,10 @@ const BouncingBalls = () => {
 ```
 npm install react-tweenful
 ```
+
+## Note
+
+A couple of the animations shown here have been initially created for CodePen by other folks. My only contribution to them was to convert them to 'react-tweenful' to show real world examples on animating stuff.
 
 ## License
 
