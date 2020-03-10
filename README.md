@@ -171,8 +171,6 @@ export default RouteTransitionDemo;
 
 `react-tweenful` in action powering a super awesome looking animation.
 
-*Initial CSS animation was found on CodePen*
-
 ![Prism](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-svg.gif "Prism")
 
 ```jsx
@@ -243,8 +241,6 @@ const RotatingSvg = () => {
 
 An example using `elastic` easing to animate gradient boxes.
 
-*Initial CSS animation was found on CodePen*
-
 ![Gradients](https://github.com/teodosii/react-tweenful/raw/master/gif/gradients.gif "Gradients")
 
 ```jsx
@@ -278,8 +274,6 @@ const Gradients = () => {
 ### Bouncing Balls
 
 Bouncing balls illustrate negative delay support in `react-tweenful`
-
-*Initial CSS animation was found on CodePen*
 
 ![Bouncing Balls](https://github.com/teodosii/react-tweenful/raw/master/gif/bouncing-ball.gif "Bouncing Balls")
 
@@ -327,6 +321,10 @@ const BouncingBalls = () => {
 ```
 npm install react-tweenful
 ```
+
+## Note
+
+A couple of the animations shown here have been initially created for CodePen by other folks. My only contribution to them was to convert them to 'react-tweenful' to show real world examples on animating stuff.
 
 ## License
 
