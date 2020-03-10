@@ -1,6 +1,6 @@
 {
   "name": "react-tweenful",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "homepage": "http://teodosii.github.io/react-tweenful",
   "description": "",
   "main": "dist/index.js",
@@ -26,7 +26,11 @@
   "keywords": [
     "react",
     "react-animation",
+    "react-animation-component",
+    "react-tween",
     "animation",
+    "animation-engine",
+    "react-component",
     "tween"
   ],
   "author": "Rares Mardare",
