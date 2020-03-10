@@ -17,7 +17,7 @@ class Parser {
     const animations = this.parseOptions(el, options, transformFrom);
     const duration = Math.max(...animations.map(({ tweens: t }) => t[t.length - 1].end));
     const events = this.parseEvents(options);
-    
+
     return {
       duration,
       progress: 0,
