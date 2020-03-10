@@ -1,7 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
@@ -56,11 +56,7 @@ module.exports = {
 
   optimization: {
     minimizer: [
-      new UglifyJSPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true
-      }),
+      new TerserPlugin(),
       new OptimizeCSSAssetsPlugin({})
     ],
     splitChunks: {
@@ -83,9 +79,10 @@ module.exports = {
       inject: true,
       template: './site/html/index.html'
     }),
-    new UglifyJSPlugin({
-      sourceMap: true
+    new HtmlWebpackPlugin({
+      template: './site/html/404.html'
     }),
+    new TerserPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),

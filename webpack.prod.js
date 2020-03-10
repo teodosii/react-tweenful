@@ -1,13 +1,12 @@
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
   mode: 'production',
-  entry: './src/react-tweenful.js',
+  entry: './src/index.js',
   devtool: 'source-map',
 
   output: {
@@ -18,18 +17,7 @@ module.exports = {
   },
 
   optimization: {
-    minimizer: [
-      new UglifyJSPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true
-      }),
-      new OptimizeCSSAssetsPlugin({}),
-      new CopyPlugin([
-        { from: 'src/scss', to: 'scss' },
-        { from: 'build/index.js', to: 'index.js' }
-      ])
-    ]
+    minimizer: [new TerserPlugin(), new OptimizeCSSAssetsPlugin({})]
   },
 
   resolve: {
@@ -51,18 +39,14 @@ module.exports = {
         test: /\.(js|jsx)$/,
         use: ['eslint-loader'],
         include: /src/
-      },
-      {
-        test: /\.(css|scss)$/,
-        use: [{ loader: MiniCssExtractPlugin.loader }, { loader: 'css-loader' }, { loader: 'sass-loader' }],
-        include: /src/
       }
     ]
   },
 
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: 'theme.css'
+    new CleanWebpackPlugin({
+      watch: true,
+      beforeEmit: true
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
@@ -70,7 +54,7 @@ module.exports = {
   ],
 
   externals: {
-    react: {
+    'react': {
       commonjs: 'react',
       commonjs2: 'react',
       amd: 'react',

@@ -6,7 +6,7 @@ export const modulo = (delay, duration) => {
   return delay;
 };
 
-export const computeProgressTick = (instance) => {
+export const computeProgressTick = instance => {
   // ignore negative delay after the first animation occurred
   if (instance.delay >= 0 || instance.timesCompleted > 0) return 0;
 
@@ -27,7 +27,7 @@ export const computeProgressTick = (instance) => {
   return 0;
 };
 
-export const updateTimesCompleted = (instance) => {
+export const updateTimesCompleted = instance => {
   const { duration, delay, loop } = instance;
 
   if (!instance.timesCompleted && delay < 0 && loop > 0) {
@@ -43,4 +43,4 @@ export const updateTimesCompleted = (instance) => {
   } else {
     instance.timesCompleted++;
   }
-}
+};

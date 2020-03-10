@@ -26,18 +26,10 @@ class RouteTransitionDemo extends React.Component {
     return (
       <div className="route-transition-demo">
         <ul className="nav-links">
-          <li>
-            <NavLink to="/transition/red">Red</NavLink>
-          </li>
-          <li>
-            <NavLink to="/transition/yellow">Yellow</NavLink>
-          </li>
-          <li>
-            <NavLink to="/transition/blue">Blue</NavLink>
-          </li>
-          <li>
-            <NavLink to="/transition/green">Green</NavLink>
-          </li>
+          <li><NavLink to="/transition/red">Red</NavLink></li>
+          <li><NavLink to="/transition/yellow">Yellow</NavLink></li>
+          <li><NavLink to="/transition/blue">Blue</NavLink></li>
+          <li><NavLink to="/transition/green">Green</NavLink></li>
         </ul>
         <div className="observer">
           <ObserverGroup>

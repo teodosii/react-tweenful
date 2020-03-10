@@ -51,11 +51,7 @@ class SVG extends React.Component {
     }
 
     if (reset) {
-      this.instance = Parser.parse(
-        this.el.current,
-        this.props,
-        this.transformFrom
-      );
+      this.instance = Parser.parse(this.el.current, this.props, this.transformFrom);
     }
 
     this.engine = new Engine({
