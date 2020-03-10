@@ -1,5 +1,7 @@
 # react-tweenful
 
+**README IN PROGRESS!**
+
 Looking for an amazing React library for animating stuff? Look no more, we've got you covered!
 
 ## Demo
@@ -97,6 +99,8 @@ Usage of `ObserverGroup` component to watch for mounting and unmounting over a l
 
 ### Animate route transition
 
+Usage of `ObserverGroup` to animate route change
+
 ![Routing](https://github.com/teodosii/react-tweenful/raw/master/gif/transition.gif "Routing")
 
 ```jsx
@@ -142,10 +146,6 @@ class RouteTransitionDemo extends React.Component {
               style={{ opacity: 0 }}
               mount={{ opacity: 1 }}
               unmount={{ opacity: 0 }}
-              events={{
-                onMountStart: () => console.log('onMountStart'),
-                onUnmountEnd: () => console.log('onUnmountEnd')
-              }}
               easing={'easeOutQuad'}
             >
               <Switch location={location}>
@@ -168,6 +168,10 @@ export default RouteTransitionDemo;
 ```
 
 ### Prism
+
+`react-tweenful` in action powering a super awesome looking animation.
+
+*Initial CSS animation was found on CodePen*
 
 ![Prism](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-svg.gif "Prism")
 
@@ -237,6 +241,10 @@ const RotatingSvg = () => {
 
 ### Gradients
 
+An example using `elastic` easing to animate gradient boxes.
+
+*Initial CSS animation was found on CodePen*
+
 ![Gradients](https://github.com/teodosii/react-tweenful/raw/master/gif/gradients.gif "Gradients")
 
 ```jsx
@@ -268,6 +276,10 @@ const Gradients = () => {
 ```
 
 ### Bouncing Balls
+
+Bouncing balls illustrate negative delay support in `react-tweenful`
+
+*Initial CSS animation was found on CodePen*
 
 ![Bouncing Balls](https://github.com/teodosii/react-tweenful/raw/master/gif/bouncing-ball.gif "Bouncing Balls")
 
