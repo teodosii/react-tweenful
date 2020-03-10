@@ -2,7 +2,7 @@
   "name": "react-tweenful",
   "version": "0.0.1",
   "homepage": "http://teodosii.github.io/react-tweenful",
-  "description": "",
+  "description": "Animation engine designed for React",
   "main": "dist/index.js",
   "scripts": {
     "build": "npm run build:library:dev && npm run build:library:prod",
