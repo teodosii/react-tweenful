@@ -21,6 +21,12 @@ https://teodosii.github.io/react-tweenful/
 
 ## Examples
 
+### Observer
+
+Usage of `Observer` component together with `Tweenful`. Animate movement with `Tweenful` and subscribe to mount and unmount with `Observer`.
+
+![Observer](https://github.com/teodosii/react-tweenful/raw/master/gif/observer.gif "Observer")
+
 ### ObserverGroup
 
 Usage of `ObserverGroup` component to watch for mounting and unmounting over a list of notifications
@@ -47,6 +53,10 @@ Usage of `ObserverGroup` component to watch for mounting and unmounting over a l
   ))}
 </ObserverGroup>
 ```
+
+### Animate route transition
+
+![Routing](https://github.com/teodosii/react-tweenful/raw/master/gif/transition.gif "Routing")
 
 ### Prism
 
