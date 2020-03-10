@@ -25,6 +25,8 @@ https://teodosii.github.io/react-tweenful/
 
 ### Observer
 
+View animation [here](https://teodosii.github.io/react-tweenful/observer)
+
 Usage of `Observer` component together with `Tweenful`. Animate movement with `Tweenful` and subscribe to mount and unmount with `Observer`.
 
 ![Observer](https://github.com/teodosii/react-tweenful/raw/master/gif/observer.gif "Observer")
@@ -72,6 +74,8 @@ const ObserverDemo = () => {
 
 ### ObserverGroup
 
+View animation [here](https://teodosii.github.io/react-tweenful/notifications)
+
 Usage of `ObserverGroup` component to watch for mounting and unmounting over a list of notifications
 
 ![Notifications](https://github.com/teodosii/react-tweenful/raw/master/gif/notifications.gif "Notifications")
@@ -98,6 +102,8 @@ Usage of `ObserverGroup` component to watch for mounting and unmounting over a l
 ```
 
 ### Animate route transition
+
+View animation [here](https://teodosii.github.io/react-tweenful/transition)
 
 Usage of `ObserverGroup` to animate route change
 
@@ -169,6 +175,8 @@ export default RouteTransitionDemo;
 
 ### Prism
 
+View animation [here](https://teodosii.github.io/react-tweenful/rotating-svg)
+
 `react-tweenful` in action powering a super awesome looking animation.
 
 ![Prism](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-svg.gif "Prism")
@@ -239,6 +247,8 @@ const RotatingSvg = () => {
 
 ### Gradients
 
+View animation [here](https://teodosii.github.io/react-tweenful/gradients)
+
 An example using `elastic` easing to animate gradient boxes.
 
 ![Gradients](https://github.com/teodosii/react-tweenful/raw/master/gif/gradients.gif "Gradients")
@@ -272,6 +282,8 @@ const Gradients = () => {
 ```
 
 ### Bouncing Balls
+
+View animation [here](https://teodosii.github.io/react-tweenful/bouncing-balls)
 
 Bouncing balls illustrate negative delay support in `react-tweenful`
 
