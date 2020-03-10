@@ -1,0 +1,17 @@
+coverage/
+gif/
+node_modules/
+site/
+src/
+tests/
+build/
+.babelrc
+.gitignore
+.eslintrc.js
+.editorconfig
+jest.config.js
+webpack.*.js
+*.log
+.prettierrc.js
+github-preview.gif
+.travis.yml
