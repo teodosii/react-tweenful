@@ -494,6 +494,10 @@ const BouncingBalls = () => {
 };
 ```
 
+## API
+
+**Update in progress. Stay in touch!**
+
 ## Note
 
 A couple of the animations shown here have been initially created for CodePen by other folks. My only contribution to them was to convert them to `react-tweenful` to show real world examples on animating stuff.
