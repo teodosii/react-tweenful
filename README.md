@@ -1,4 +1,4 @@
-[![npm version](https://badgen.net/npm/v/react-tweenful)](https://www.npmjs.com/package/react-tweenful)
+[![npm version](https://badgen.net/npm/v/react-tweenful)](https://www.npmjs.com/package/react-tweenful) [![Minified & Gzipped size](https://badgen.net/bundlephobia/minzip/react-tweenful)](https://bundlephobia.com/result?p=react-ttweenful)
 
 # react-tweenful
 
