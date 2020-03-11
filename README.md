@@ -314,7 +314,7 @@ View animation [here](https://teodosii.github.io/react-tweenful/svg)
 
 An example animating SVG `path` and `fill` properties one after the other.
 
-![SVG](https://github.com/teodosii/react-tweenful/raw/changes/gif/svg-path.gif "SVG")
+![SVG](https://github.com/teodosii/react-tweenful/raw/master/gif/svg-path.gif "SVG")
 
 ### Gradients
 
@@ -356,7 +356,7 @@ const Gradients = () => {
 
 View animation [here](https://teodosii.github.io/react-tweenful/loading-circles)
 
-![Loader](https://github.com/teodosii/react-tweenful/raw/changes/gif/rotating-circles.gif "Loader")
+![Loader](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-circles.gif "Loader")
 
 ```jsx
 import React from 'react';
