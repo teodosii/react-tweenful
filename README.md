@@ -45,6 +45,7 @@ npm run start
 ```
 
 Both commands will instruct webpack to watch for changes.
+Navigate to `http://localhost:8080/react-tweenful` or whatever port you're running the application on.
 
 ## Usage
 
