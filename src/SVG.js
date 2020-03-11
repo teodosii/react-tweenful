@@ -82,6 +82,7 @@ class SVG extends React.Component {
   }
 
   componentWillUnmount() {
+    this.stop();
     document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 

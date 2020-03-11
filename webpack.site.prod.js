@@ -1,6 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const webpack = require('webpack');
@@ -75,12 +76,10 @@ module.exports = {
       watch: true,
       beforeEmit: true
     }),
+    new CopyPlugin([{ from: './site/html/404.html', to: './' }]),
     new HtmlWebpackPlugin({
       inject: true,
       template: './site/html/index.html'
-    }),
-    new HtmlWebpackPlugin({
-      template: './site/html/404.html'
     }),
     new TerserPlugin(),
     new webpack.DefinePlugin({

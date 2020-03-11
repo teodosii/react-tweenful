@@ -1,7 +1,5 @@
 # react-tweenful
 
-**README IN PROGRESS!**
-
 Looking for an amazing React library for animating stuff? Look no more, we've got you covered!
 
 ## Demo
@@ -20,6 +18,71 @@ https://teodosii.github.io/react-tweenful/
 * `SVG` component to animate SVG nodes
 * `Observer` component for mount/unmount animations
 * `ObserverGroup` component to handle child transition (list removal/insertion, page transition etc)
+
+## Getting started
+
+```
+npm install react-tweenful
+```
+
+### Development
+
+In order to build the project and run it on your local machine, you'll need to build both the `site` project and the library itself. The `site` project will have a dependency of `react-tweenful` and there you'll be able to play with the examples.
+
+```
+npm run build:library:dev
+npm run start
+```
+
+Or if you want to be able to modify both projects at once and let webpack watch the changes and do the build for you, then open 2 separate terminals and run the following commands
+
+```
+npm run watch:library:dev
+```
+And in a separate terminal run
+```
+npm run start
+```
+
+Both commands will instruct webpack to watch for changes.
+Navigate to `http://localhost:8080/react-tweenful` or whatever port you're running the application on.
+
+## Usage
+
+`react-tweenful` exports the following:
+
+* `Tweenful` - component to animate DOM elements. It requires a DOM node to perform animation on.
+* `SVG` - component to animate SVG elements. It requires a SVG node to perform animation on.
+* `Observer` - component to animate mounting and unmounting of an element.
+* `ObserverGroup` - component to watch over a list of `Observer` elements such as list removal/insertion or route transition
+
+A couple of utility functions are also exported to help you out animating:
+
+* `percentage` for percentage based animations
+* `bezier` for bezier easings
+* `elastic` for elastic easing
+
+Import the needed component, for example `Tweenful`
+
+```jsx
+import Tweenful, { elastic } from 'react-tweenful';
+```
+
+`Tweenful` requires a node to render on which it will perform the animation. We've got most of the DOM nodes covered in the form of namespacing such as `Tweenful.div`, `Tweenful.span` and so on.
+
+```jsx
+const Example = () => (
+  <Tweenful.div	
+    className="tween-box"	
+    duration={2000}	
+    easing={elastic(1, 0.1)}
+    style={{ position: 'relative' }}	
+    animate={{ left: ['0px', '250px'] }}
+  ></Tweenful.div>
+);
+```
+
+Voila!
 
 ## Examples
 
@@ -245,6 +308,14 @@ const RotatingSvg = () => {
 };
 ```
 
+### SVG
+
+View animation [here](https://teodosii.github.io/react-tweenful/svg)
+
+An example animating SVG `path` and `fill` properties one after the other.
+
+![SVG](https://github.com/teodosii/react-tweenful/raw/master/gif/svg-path.gif "SVG")
+
 ### Gradients
 
 View animation [here](https://teodosii.github.io/react-tweenful/gradients)
@@ -279,6 +350,102 @@ const Gradients = () => {
     </div>
   );
 };
+```
+
+### Loader
+
+View animation [here](https://teodosii.github.io/react-tweenful/loading-circles)
+
+![Loader](https://github.com/teodosii/react-tweenful/raw/master/gif/rotating-circles.gif "Loader")
+
+```jsx
+import React from 'react';
+import Tweenful, { percentage } from 'react-tweenful';
+
+const rotate = percentage({
+  '0%': { translate: '-50% -50%', rotate: '0deg' },
+  '50%': { translate: '-50% -50%', rotate: '0deg' },
+  '80%': { translate: '-50% -50%', rotate: '360deg' },
+  '100%': { translate: '-50% -50%', rotate: '360deg' }
+});
+const dot1Animate = percentage({
+  '0%': { scale: 1 },
+  '20%': { scale: 1 },
+  '45%': { translate: '16px 12px', scale: 0.45 },
+  '60%': { translate: '160px 150px', scale: 0.45 },
+  '80%': { translate: '160px 150px', scale: 0.45 },
+  '100%': { translate: '0px 0px', scale: 1 }
+});
+const dot2Animate = percentage({
+  '0%': { scale: 1 },
+  '20%': { scale: 1 },
+  '45%': { translate: '-16px 12px', scale: 0.45 },
+  '60%': { translate: '-160px 150px', scale: 0.45 },
+  '80%': { translate: '-160px 150px', scale: 0.45 },
+  '100%': { translate: '0px 0px', scale: 1 }
+});
+const dot3Animate = percentage({
+  '0%': { scale: 1 },
+  '20%': { scale: 1 },
+  '45%': { translateY: '-18px', scale: 0.45 },
+  '60%': { translateY: '-180px', scale: 0.45 },
+  '80%': { translateY: '-180px', scale: 0.45 },
+  '100%': { translateY: '0px', scale: 1 }
+});
+
+const LoadingCircles = () => {
+  return (
+    <div className="loading-wrapper">
+      <Tweenful.div
+        className="loading-circles-container"
+        duration={2000}
+        loop={true}
+        easing="easeInOutCubic"
+        transform={{ translate: '-50% -50%' }}
+        animate={rotate}
+      >
+        <Tweenful.div
+          className="dot dot-1"
+          duration={2000}
+          easing="easeOutCubic"
+          loop={true}
+          transform={{ translate: '0px 0px', scale: 1 }}
+          animate={dot1Animate}
+        ></Tweenful.div>
+        <Tweenful.div
+          className="dot dot-2"
+          duration={2000}
+          easing="easeOutCubic"
+          loop={true}
+          transform={{ translate: '0px 0px', scale: 1 }}
+          animate={dot2Animate}
+        ></Tweenful.div>
+        <Tweenful.div
+          className="dot dot-3"
+          duration={2000}
+          easing="easeOutCubic"
+          loop={true}
+          transform={{ translateY: '0px', scale: 1 }}
+          animate={dot3Animate}
+        ></Tweenful.div>
+      </Tweenful.div>
+
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 21 -7"
+            />
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  );
+};
+
 ```
 
 ### Bouncing Balls
@@ -328,11 +495,9 @@ const BouncingBalls = () => {
 };
 ```
 
-## Getting started
+## API
 
-```
-npm install react-tweenful
-```
+**Update in progress. Stay in touch!**
 
 ## Note
 

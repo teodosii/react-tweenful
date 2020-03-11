@@ -11,7 +11,7 @@ module.exports = {
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/react-tweenful.js',
+    filename: 'react-tweenful.js',
     library: 'Tweenful',
     libraryTarget: 'commonjs2'
   },

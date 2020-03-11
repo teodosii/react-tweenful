@@ -41,6 +41,7 @@ class Observer extends React.Component {
 
   componentWillUnmount() {
     this.unmounted = true;
+    this.engine.stop();
     document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
