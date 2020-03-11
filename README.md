@@ -1,3 +1,5 @@
+[![npm version](https://badgen.net/npm/v/react-tweenful)](https://www.npmjs.com/package/react-tweenful)
+
 # react-tweenful
 
 Looking for an amazing React library for animating stuff? Look no more, we've got you covered!
